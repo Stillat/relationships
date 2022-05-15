@@ -4,12 +4,11 @@ namespace Stillat\Relationships\Comparisons;
 
 class ListComparator
 {
-
     /**
      * Gets the differences between two arrays.
      *
-     * @param array|null $a The original array data.
-     * @param array|null $b The updated array data.
+     * @param  array|null  $a  The original array data.
+     * @param  array|null  $b  The updated array data.
      * @return ComparisonResult
      */
     public static function compare($a, $b)

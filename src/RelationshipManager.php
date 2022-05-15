@@ -30,7 +30,7 @@ class RelationshipManager
     }
 
     /**
-     * @param string $handle The collection handle.
+     * @param  string  $handle  The collection handle.
      * @return EntryRelationship
      */
     public function collection($handle)
@@ -64,8 +64,8 @@ class RelationshipManager
     }
 
     /**
-     * @param string $leftCollectionHandle
-     * @param string $rightCollectionHandle
+     * @param  string  $leftCollectionHandle
+     * @param  string  $rightCollectionHandle
      * @return RelationshipProxy
      */
     public function oneToOne($leftCollectionHandle, $rightCollectionHandle)
@@ -76,8 +76,8 @@ class RelationshipManager
     }
 
     /**
-     * @param string $leftCollectionHandle
-     * @param string $rightCollectionHandle
+     * @param  string  $leftCollectionHandle
+     * @param  string  $rightCollectionHandle
      * @return RelationshipProxy
      */
     public function oneToMany($leftCollectionHandle, $rightCollectionHandle)
@@ -87,13 +87,13 @@ class RelationshipManager
 
         return new RelationshipProxy([
             $this->getRelationship($left, $right)->manyToOne(),
-            $this->getRelationship($right, $left)->oneToMany()->isAutomaticInverse()
+            $this->getRelationship($right, $left)->oneToMany()->isAutomaticInverse(),
         ]);
     }
 
     /**
-     * @param string $leftCollectionHandle
-     * @param string $rightCollectionHandle
+     * @param  string  $leftCollectionHandle
+     * @param  string  $rightCollectionHandle
      * @return RelationshipProxy
      */
     public function manyToOne($leftCollectionHandle, $rightCollectionHandle)
@@ -103,13 +103,13 @@ class RelationshipManager
 
         return new RelationshipProxy([
             $this->getRelationship($left, $right)->oneToMany(),
-            $this->getRelationship($right, $left)->manyToOne()->isAutomaticInverse()
+            $this->getRelationship($right, $left)->manyToOne()->isAutomaticInverse(),
         ]);
     }
 
     /**
-     * @param string $leftCollectionHandle
-     * @param string $rightCollectionHandle
+     * @param  string  $leftCollectionHandle
+     * @param  string  $rightCollectionHandle
      * @return RelationshipProxy
      */
     public function manyToMany($leftCollectionHandle, $rightCollectionHandle)
@@ -127,7 +127,7 @@ class RelationshipManager
     /**
      * Determines if relationships exist for the specified collection.
      *
-     * @param string $handle The collection handle.
+     * @param  string  $handle  The collection handle.
      * @return bool
      */
     public function hasRelationshipsForCollection($handle)
@@ -138,7 +138,7 @@ class RelationshipManager
     /**
      * Gets all relationships for the specified collection.
      *
-     * @param string $handle The collection handle.
+     * @param  string  $handle  The collection handle.
      * @return EntryRelationship[]
      */
     public function getRelationshipsForCollection($handle)

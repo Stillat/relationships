@@ -8,7 +8,6 @@ use Stillat\Relationships\RelationshipManager;
 
 class EntryDeletedListener
 {
-
     /**
      * @var RelationshipManager
      */
@@ -33,6 +32,5 @@ class EntryDeletedListener
 
         $this->manager->processor()->setIsDeleting()->setEntryId($entry->id())
             ->setPristineDetails($entry, false)->process($relationships);
-
     }
 }

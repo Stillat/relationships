@@ -36,7 +36,7 @@ class RelationshipTestCase extends BaseTestCase
         $this->blueprints[$name] = $blueprint;
 
         BlueprintRepository::shouldReceive('in')->with('collections/'.$name)->andReturn(collect([
-            $name => $blueprint
+            $name => $blueprint,
         ]));
     }
 
@@ -102,7 +102,6 @@ class RelationshipTestCase extends BaseTestCase
                 'title' => 'Conference Two',
             ],
         ]);
-
 
         $this->createEntries('employees', [
             [

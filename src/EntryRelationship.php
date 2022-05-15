@@ -87,7 +87,7 @@ class EntryRelationship
     /**
      * Sets whether affected entries will be saved quietly.
      *
-     * @param bool $withEvents Whether to trigger events.
+     * @param  bool  $withEvents  Whether to trigger events.
      * @return $this
      */
     public function withEvents($withEvents = true)
@@ -113,7 +113,7 @@ class EntryRelationship
     /**
      * Sets whether affected entries will be updated when deleting related entries.
      *
-     * @param bool $allowDelete Whether to allow deletes.
+     * @param  bool  $allowDelete  Whether to allow deletes.
      * @return $this
      */
     public function allowDeletes($allowDelete = true)
@@ -127,11 +127,11 @@ class EntryRelationship
     {
         if ($this->type == EntryRelationship::TYPE_MANY_TO_ONE) {
             return 'Many to One (*-1)';
-        } else if ($this->type == EntryRelationship::TYPE_ONE_TO_MANY) {
+        } elseif ($this->type == EntryRelationship::TYPE_ONE_TO_MANY) {
             return 'One to Many (1-*)';
-        } else if ($this->type == EntryRelationship::TYPE_MANY_TO_MANY) {
+        } elseif ($this->type == EntryRelationship::TYPE_MANY_TO_MANY) {
             return 'Many to Many (*-*)';
-        } else if ($this->type == EntryRelationship::TYPE_ONE_TO_ONE) {
+        } elseif ($this->type == EntryRelationship::TYPE_ONE_TO_ONE) {
             return 'One to One (1-1)';
         }
 
@@ -142,11 +142,11 @@ class EntryRelationship
     {
         if ($this->type == EntryRelationship::TYPE_MANY_TO_ONE) {
             return '(*-1)';
-        } else if ($this->type == EntryRelationship::TYPE_ONE_TO_MANY) {
+        } elseif ($this->type == EntryRelationship::TYPE_ONE_TO_MANY) {
             return '(1-*)';
-        } else if ($this->type == EntryRelationship::TYPE_MANY_TO_MANY) {
+        } elseif ($this->type == EntryRelationship::TYPE_MANY_TO_MANY) {
             return '(*-*)';
-        } else if ($this->type == EntryRelationship::TYPE_ONE_TO_ONE) {
+        } elseif ($this->type == EntryRelationship::TYPE_ONE_TO_ONE) {
             return '(1-1)';
         }
 
