@@ -1,5 +1,20 @@
 {
     "name": "stillat/relationships",
+    "type": "statamic-addon",
+    "description": "Provides bi-directional entry relationship automation",
+    "keywords": [
+        "statamic",
+        "entries"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "John Koster",
+            "email": "john@stillat.com",
+            "homepage": "https://stillat.com",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "php": "^7.3|^8.0",
         "statamic/cms": "^3.3"
