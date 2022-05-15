@@ -136,8 +136,8 @@ class RelationshipProcessor
     }
 
     /**
-     * @param Entry $entry
-     * @param EntryRelationship $relationship
+     * @param  Entry  $entry
+     * @param  EntryRelationship  $relationship
      */
     protected function updateEntry($entry, $relationship)
     {
@@ -196,7 +196,6 @@ class RelationshipProcessor
             return;
         }
 
-
         /** @var EntryRelationship $relationship */
         foreach ($relationships as $relationship) {
             if ($this->isDelete && ! $relationship->allowDelete) {
@@ -213,6 +212,7 @@ class RelationshipProcessor
 
         if (! $results->hasChanges()) {
             UpdatedRelationshipsEvent::dispatch($relationship, $results);
+
             return;
         }
 
@@ -220,11 +220,11 @@ class RelationshipProcessor
 
         if ($relationship->type == EntryRelationship::TYPE_MANY_TO_MANY) {
             $this->processManyToMany($results, $relationship);
-        } else if ($relationship->type == EntryRelationship::TYPE_ONE_TO_ONE) {
+        } elseif ($relationship->type == EntryRelationship::TYPE_ONE_TO_ONE) {
             $this->processOneToOne($results, $relationship);
-        } else if ($relationship->type == EntryRelationship::TYPE_ONE_TO_MANY) {
+        } elseif ($relationship->type == EntryRelationship::TYPE_ONE_TO_MANY) {
             $this->processOneToMany($results, $relationship);
-        } else if ($relationship->type == EntryRelationship::TYPE_MANY_TO_ONE) {
+        } elseif ($relationship->type == EntryRelationship::TYPE_MANY_TO_ONE) {
             $this->processManyToOne($results, $relationship);
         }
 
@@ -232,16 +232,20 @@ class RelationshipProcessor
     }
 
     /**
-     * @param EntryRelationship $relationship
-     * @param Entry $entry
+     * @param  EntryRelationship  $relationship
+     * @param  Entry  $entry
      */
     protected function removeFieldValue($relationship, $entry)
     {
-        if ($entry->collectionHandle() != $relationship->rightCollection) { return; }
+        if ($entry->collectionHandle() != $relationship->rightCollection) {
+            return;
+        }
 
         $rightReference = $entry->get($relationship->rightField, null);
 
-        if ($rightReference != $this->entryId) { return; }
+        if ($rightReference != $this->entryId) {
+            return;
+        }
 
         $entry->set($relationship->rightField, null);
 
@@ -249,12 +253,14 @@ class RelationshipProcessor
     }
 
     /**
-     * @param EntryRelationship $relationship
-     * @param Entry $entry
+     * @param  EntryRelationship  $relationship
+     * @param  Entry  $entry
      */
     protected function setFieldValue($relationship, $entry)
     {
-        if ($entry->collectionHandle() != $relationship->rightCollection) { return; }
+        if ($entry->collectionHandle() != $relationship->rightCollection) {
+            return;
+        }
 
         $rightReference = $entry->get($relationship->rightField, null);
 
@@ -266,16 +272,20 @@ class RelationshipProcessor
     }
 
     /**
-     * @param EntryRelationship $relationship
-     * @param Entry $entry
+     * @param  EntryRelationship  $relationship
+     * @param  Entry  $entry
      */
     protected function addItemToEntry($relationship, $entry)
     {
-        if ($entry->collectionHandle() != $relationship->rightCollection) { return; }
+        if ($entry->collectionHandle() != $relationship->rightCollection) {
+            return;
+        }
 
         $rightReference = $entry->get($relationship->rightField, []);
 
-        if (in_array($this->entryId, $rightReference)) { return; }
+        if (in_array($this->entryId, $rightReference)) {
+            return;
+        }
 
         $rightReference[] = $this->entryId;
         $entry->set($relationship->rightField, array_values($rightReference));
@@ -284,12 +294,14 @@ class RelationshipProcessor
     }
 
     /**
-     * @param EntryRelationship $relationship
-     * @param Entry $entry
+     * @param  EntryRelationship  $relationship
+     * @param  Entry  $entry
      */
     protected function removeItemFromEntry($relationship, $entry)
     {
-        if ($entry->collectionHandle() != $relationship->rightCollection) { return; }
+        if ($entry->collectionHandle() != $relationship->rightCollection) {
+            return;
+        }
 
         $rightReference = $entry->get($relationship->rightField, []);
 

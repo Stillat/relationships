@@ -5,12 +5,12 @@ namespace Tests;
 use Statamic\Facades\Entry;
 use Stillat\Relationships\Support\Facades\Relate;
 
-class ManyToOneDeleteTest extends  RelationshipTestCase
+class ManyToOneDeleteTest extends RelationshipTestCase
 {
     public function test_many_to_one_delete()
     {
         Relate::clear()
-            ->manyToOne( 'authors.books', 'books.author');
+            ->manyToOne('authors.books', 'books.author');
 
         Entry::find('books-1')->set('author', 'authors-1')->save();
 

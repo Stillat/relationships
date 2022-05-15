@@ -23,7 +23,7 @@ class RelationshipProxy
     /**
      * Sets whether affected entries will be updated when deleting related entries.
      *
-     * @param bool $allowDelete Whether to allow deletes.
+     * @param  bool  $allowDelete  Whether to allow deletes.
      * @return $this
      */
     public function allowDelete($allowDelete = true)
@@ -38,13 +38,13 @@ class RelationshipProxy
     /**
      * Sets whether affected entries will be saved quietly.
      *
-     * @param bool $withEvents Whether to trigger events.
+     * @param  bool  $withEvents  Whether to trigger events.
      * @return $this
      */
     public function withEvents($withEvents = true)
     {
         $this->relationships->each(function (EntryRelationship $relationship) use ($withEvents) {
-           $relationship->withEvents($withEvents);
+            $relationship->withEvents($withEvents);
         });
 
         return $this;
