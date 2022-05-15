@@ -1,0 +1,8 @@
+.idea
+node_modules
+.DS_Store
+.phpunit.result.cache
+.php-cs-fixer.cache
+vendor
+mix-manifest.json
+composer.lock

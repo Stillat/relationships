@@ -1,0 +1,108 @@
+sections:
+  main:
+    display: Main
+    fields:
+      -
+        handle: title
+        field:
+          type: text
+          required: true
+          validate:
+            - required
+      -
+        handle: content
+        field:
+          type: markdown
+          localizable: true
+      -
+        handle: start_date
+        field:
+          mode: single
+          time_enabled: false
+          time_seconds_enabled: false
+          full_width: false
+          inline: false
+          columns: 1
+          rows: 1
+          display: 'Start Date'
+          type: date
+          icon: date
+          listable: hidden
+          instructions_position: above
+          read_only: false
+      -
+        handle: end_date
+        field:
+          mode: single
+          time_enabled: false
+          time_seconds_enabled: false
+          full_width: false
+          inline: false
+          columns: 1
+          rows: 1
+          display: 'End Date'
+          type: date
+          icon: date
+          listable: hidden
+          instructions_position: above
+          read_only: false
+      -
+        handle: sponsored_by
+        field:
+          mode: default
+          create: true
+          collections:
+            - sponsors
+          display: Sponsors
+          type: entries
+          icon: entries
+          listable: hidden
+          instructions_position: above
+          read_only: false
+      -
+        handle: special_sponsors
+        field:
+          collapse: false
+          sets:
+            new_set:
+              display: 'New Set'
+              fields:
+                -
+                  handle: sponsor
+                  field:
+                    max_items: 1
+                    mode: default
+                    create: true
+                    collections:
+                      - sponsors
+                    display: Sponsor
+                    type: entries
+                    icon: entries
+                    listable: hidden
+                    instructions_position: above
+                    read_only: false
+                -
+                  handle: special_notes
+                  field:
+                    antlers: false
+                    display: 'Special Notes'
+                    type: textarea
+                    icon: textarea
+                    listable: hidden
+                    instructions_position: above
+                    read_only: false
+          display: 'Special Sponsors'
+          type: replicator
+          icon: replicator
+          listable: hidden
+          instructions_position: above
+          read_only: false
+  sidebar:
+    display: Sidebar
+    fields:
+      -
+        handle: slug
+        field:
+          type: slug
+          localizable: true
+title: Conferences
