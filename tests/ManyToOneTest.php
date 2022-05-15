@@ -10,7 +10,7 @@ class ManyToOneTest extends RelationshipTestCase
     public function test_many_to_one_relationship()
     {
         Relate::clear()
-            ->manyToOne( 'authors.books', 'books.author');
+            ->manyToOne('authors.books', 'books.author');
 
         Entry::find('books-1')->set('author', 'authors-1')->save();
 

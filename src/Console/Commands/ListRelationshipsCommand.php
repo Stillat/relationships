@@ -40,9 +40,9 @@ class ListRelationshipsCommand extends Command
                 'right_collection' => $relationship->rightCollection,
                 'right_field' => $relationship->rightField,
                 'type_description' => $relationship->getRelationshipDescription(),
-                'with_events' => $relationship->withEvents ? 'Yes': 'No',
-                'allow_delete' => $relationship->allowDelete ? 'Yes': 'No',
-                'automatic_inverse' => $relationship->isAutomaticInverse ? "Yes ({$relationship->inverseIndex})": 'No',
+                'with_events' => $relationship->withEvents ? 'Yes' : 'No',
+                'allow_delete' => $relationship->allowDelete ? 'Yes' : 'No',
+                'automatic_inverse' => $relationship->isAutomaticInverse ? "Yes ({$relationship->inverseIndex})" : 'No',
             ];
         }
 
@@ -55,7 +55,7 @@ class ListRelationshipsCommand extends Command
             'Relationship',
             'With Events?',
             'Allow Deletes?',
-            'Is Automatic Inverse?'
+            'Is Automatic Inverse?',
         ], $list);
     }
 }

@@ -8,9 +8,9 @@ use Statamic\Contracts\Entries\Entry;
 trait GetsFieldValues
 {
     /**
-     * @param string $fieldName
-     * @param Entry $entry
-     * @param mixed|null $default
+     * @param  string  $fieldName
+     * @param  Entry  $entry
+     * @param  mixed|null  $default
      */
     protected function getFieldValue($fieldName, $entry, $default = null)
     {

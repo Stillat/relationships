@@ -24,7 +24,9 @@ class EntrySavedListener
         $entry = $event->entry;
         $collection = $entry->collection();
 
-        if ($collection == null) { return; }
+        if ($collection == null) {
+            return;
+        }
 
         $this->manager->processor()->setUpdatedEntryDetails($entry);
 

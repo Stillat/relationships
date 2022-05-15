@@ -2,7 +2,6 @@
 
 namespace Tests;
 
-
 abstract class BaseTestCase extends \Orchestra\Testbench\TestCase
 {
     protected $shouldFakeVersion = true;

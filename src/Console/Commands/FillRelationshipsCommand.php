@@ -77,7 +77,7 @@ class FillRelationshipsCommand extends Command
 
         if ($verbosity == OutputInterface::VERBOSITY_NORMAL) {
             $this->setupNormalVerbosity();
-        } else if ($verbosity > OutputInterface::VERBOSITY_NORMAL) {
+        } elseif ($verbosity > OutputInterface::VERBOSITY_NORMAL) {
             $this->setupVerboseLogging();
         }
 
@@ -88,7 +88,7 @@ class FillRelationshipsCommand extends Command
             Event::listen(UpdatedRelatedEntryEvent::class, function (UpdatedRelatedEntryEvent $event) {
                 $this->line("    Updating entry: {$event->updatedEntry->id()}... done!");
             });
-        } else if ($verbosity >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
+        } elseif ($verbosity >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
             Event::listen(UpdatingRelatedEntryEvent::class, function (UpdatingRelatedEntryEvent $event) {
                 $this->line("    Updating entry: {$event->updatedEntry->id()}");
             });
@@ -100,6 +100,7 @@ class FillRelationshipsCommand extends Command
 
         if ($collection != null && is_string($collection)) {
             $this->processor->fillCollection($collection);
+
             return;
         }
 

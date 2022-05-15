@@ -14,11 +14,11 @@ class ManyToManyDeleteTest extends RelationshipTestCase
 
         Entry::find('sponsors-1')->set('sponsoring', [
             'conferences-1',
-            'conferences-2'
+            'conferences-2',
         ])->save();
 
         Entry::find('sponsors-2')->set('sponsoring', [
-            'conferences-2'
+            'conferences-2',
         ])->save();
 
         Entry::find('conferences-1')->delete();

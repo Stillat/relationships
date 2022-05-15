@@ -14,11 +14,11 @@ class ManyToManyTest extends RelationshipTestCase
 
         Entry::find('sponsors-1')->set('sponsoring', [
             'conferences-1',
-            'conferences-2'
+            'conferences-2',
         ])->save();
 
         Entry::find('sponsors-2')->set('sponsoring', [
-            'conferences-2'
+            'conferences-2',
         ])->save();
 
         $this->assertSame(['sponsors-1', 'sponsors-2'], Entry::find('conferences-2')->get('sponsors'));
