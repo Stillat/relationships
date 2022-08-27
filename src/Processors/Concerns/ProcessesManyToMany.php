@@ -10,19 +10,19 @@ trait ProcessesManyToMany
     protected function processManyToMany(ComparisonResult $results, EntryRelationship $relationship)
     {
         foreach ($results->added as $addedId) {
-            if (! array_key_exists($addedId, $this->effectedEntries)) {
+            if (! $this->shouldProcessRelationship($relationship, $addedId)) {
                 continue;
             }
 
-            $this->addItemToEntry($relationship, $this->effectedEntries[$addedId]);
+            $this->addItemToEntry($relationship, $this->getEffectedEntity($relationship, $addedId));
         }
 
         foreach ($results->removed as $removedId) {
-            if (! array_key_exists($removedId, $this->effectedEntries)) {
+            if (! $this->shouldProcessRelationship($relationship, $removedId)) {
                 continue;
             }
 
-            $this->removeItemFromEntry($relationship, $this->effectedEntries[$removedId]);
+            $this->removeItemFromEntry($relationship, $this->getEffectedEntity($relationship, $removedId));
         }
     }
 }

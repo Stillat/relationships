@@ -5,6 +5,7 @@ namespace Tests;
 use Facades\Statamic\Fields\BlueprintRepository;
 use Facades\Tests\Factories\EntryFactory;
 use Statamic\Facades\Collection;
+use Statamic\Facades\User;
 use Statamic\Facades\YAML;
 use Statamic\Fields\Blueprint;
 
@@ -19,11 +20,13 @@ class RelationshipTestCase extends BaseTestCase
         parent::setUp();
 
         $this->createBlueprints();
+        $this->createUserBlueprint();
         $this->createCollections();
         $this->createCollectionEntries();
+        $this->createUsers();
     }
 
-    protected function makeBlueprint($name)
+    protected function buildBlueprint($name, $path)
     {
         $fields = YAML::parse(file_get_contents(__DIR__.'/__fixtures__/blueprints/'.$name.'.yaml'))['sections']['main']['fields'];
 
@@ -35,9 +38,21 @@ class RelationshipTestCase extends BaseTestCase
 
         $this->blueprints[$name] = $blueprint;
 
-        BlueprintRepository::shouldReceive('in')->with('collections/'.$name)->andReturn(collect([
+
+        BlueprintRepository::shouldReceive('find')->zeroOrMoreTimes()->with($path)->andReturn($blueprint);
+        BlueprintRepository::shouldReceive('in')->zeroOrMoreTimes()->with($path)->andReturn(collect([
             $name => $blueprint,
         ]));
+    }
+
+    protected function createUserBlueprint()
+    {
+        $this->buildBlueprint('user', 'user');
+    }
+
+    protected function makeBlueprint($name)
+    {
+        $this->buildBlueprint($name, 'collections/'.$name);
     }
 
     protected function createBlueprints()
@@ -58,6 +73,12 @@ class RelationshipTestCase extends BaseTestCase
         Collection::make('employees')->routes('employees/{slug}')->save();
         Collection::make('positions')->routes('positions/{slug}')->save();
         Collection::make('sponsors')->routes('sponsors/{slug}')->save();
+    }
+
+    protected function createUsers()
+    {
+        User::make()->id('user-1')->email('user1@example.org')->save();
+        User::make()->id('user-2')->email('user2@example.org')->save();
     }
 
     private function createEntry($collection, $id, $data)

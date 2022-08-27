@@ -28,6 +28,17 @@ sections:
           listable: hidden
           instructions_position: above
           read_only: false
+      -
+        handle: book_author
+        field:
+          max_items: 1
+          mode: select
+          display: 'Book Author'
+          type: users
+          icon: users
+          listable: hidden
+          instructions_position: above
+          visibility: visible
   sidebar:
     display: Sidebar
     fields:

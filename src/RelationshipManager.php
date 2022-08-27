@@ -2,6 +2,8 @@
 
 namespace Stillat\Relationships;
 
+use InvalidArgumentException;
+use Illuminate\Support\Str;
 use Stillat\Relationships\Processors\RelationshipProcessor;
 
 class RelationshipManager
@@ -15,6 +17,8 @@ class RelationshipManager
      * @var RelationshipProcessor
      */
     protected $processor;
+
+    protected $validEntityTypes = ['entry', 'user'];
 
     public function __construct(RelationshipProcessor $processor)
     {
@@ -38,18 +42,58 @@ class RelationshipManager
         $relationship = new EntryRelationship();
         $relationship->collection($handle);
 
-        if (! array_key_exists($handle, $this->relationships)) {
-            $this->relationships[$handle] = [];
+        if (! array_key_exists('entries', $this->relationships)) {
+            $this->relationships['entries'] = [];
         }
 
-        $this->relationships[$handle][] = $relationship;
+        if (! array_key_exists($handle, $this->relationships['entries'])) {
+            $this->relationships['entries'][$handle] = [];
+        }
+
+        $this->relationships['entries'][$handle][] = $relationship;
 
         return $relationship;
     }
 
+    public function user($fieldName)
+    {
+        $relationship = new EntryRelationship();
+        $relationship->leftType = 'user';
+        $relationship->leftField = $fieldName;
+        $relationship->leftCollection = '[user]';
+
+        if (! array_key_exists('users', $this->relationships)) {
+            $this->relationships['users'] = [];
+        }
+
+        $this->relationships['users'][] = $relationship;
+
+        return $relationship;
+    }
+
+    protected function getRelationshipBuilder($left, $leftType)
+    {
+        if ($leftType == 'entry') {
+            return $this->collection($left);
+        } else if ($leftType == 'user') {
+            return $this->user($left);
+        }
+    }
+
     private function getRelationship($left, $right)
     {
-        return $this->collection($left[0])->field($left[1])->isRelatedTo($right[0])->through($right[1]);
+        if (! in_array($left[0], $this->validEntityTypes)) {
+            throw new InvalidArgumentException($left[0]. ' is not a valid entity type.');
+        }
+
+        if (! in_array($right[0], $this->validEntityTypes)) {
+            throw new InvalidArgumentException($right[0]. ' is not a valid entity type.');
+        }
+
+        return $this->getRelationshipBuilder($left[1], $left[0])
+                ->field($left[2], $left[0])
+            ->isRelatedTo($right[1])
+                ->through($right[2], $right[0]);
     }
 
     private function buildRelationships($leftCollectionHandle, $rightCollectionHandle)
@@ -121,7 +165,22 @@ class RelationshipManager
 
     protected function getFieldDetails($handle)
     {
-        return explode('.', $handle, 2);
+        $details = explode('.', $handle, 2);
+
+        if (Str::contains($details[0], ':')) {
+            $typeDetails = array_shift($details);
+            $additionalDetails = explode(':', $typeDetails, 2);
+
+            if ($additionalDetails[0] == 'user') {
+                array_unshift($additionalDetails, 'user');
+            }
+
+            array_unshift($details, ...$additionalDetails);
+        } else {
+            array_unshift($details, 'entry');
+        }
+
+        return $details;
     }
 
     /**
@@ -135,6 +194,15 @@ class RelationshipManager
         return ! empty($this->getRelationshipsForCollection($handle));
     }
 
+    public function hasUserRelationships()
+    {
+        if (! array_key_exists('users', $this->relationships)) {
+            return false;
+        }
+
+        return count($this->relationships['users']) > 0;
+    }
+
     /**
      * Gets all relationships for the specified collection.
      *
@@ -143,32 +211,80 @@ class RelationshipManager
      */
     public function getRelationshipsForCollection($handle)
     {
-        if (! array_key_exists($handle, $this->relationships)) {
+        if (! array_key_exists('entries', $this->relationships)) {
             return [];
         }
 
-        return $this->relationships[$handle];
+        if (! array_key_exists($handle, $this->relationships['entries'])) {
+            return [];
+        }
+
+        return $this->relationships['entries'][$handle];
     }
 
     public function getAll()
     {
-        return $this->relationships;
+        return $this->getAllRelationships();
+    }
+
+    /**
+     * Returns all relationships for the provided entity type.
+     *
+     * @param string $entityType The entity type.
+     * @return array|EntryRelationship
+     */
+    private function getEntityTypeRelationships($entityType)
+    {
+        if (! array_key_exists($entityType, $this->relationships)) {
+            return [];
+        }
+
+        return $this->relationships[$entityType];
+    }
+
+    /**
+     * Returns all entry relationships.
+     *
+     * @return array|EntryRelationship
+     */
+    public function getAllEntryRelationships()
+    {
+        return $this->getEntityTypeRelationships('entries');
+    }
+
+    /**
+     * Returns all user relationships.
+     *
+     * @return array|EntryRelationship
+     */
+    public function getAllUserRelationships()
+    {
+        return $this->getEntityTypeRelationships('users');
     }
 
     public function getAllRelationships()
     {
         $relationships = [];
 
-        foreach ($this->relationships as $collectionRelationships) {
+        foreach ($this->getAllEntryRelationships() as $collectionRelationships) {
             $relationships = array_merge($relationships, $collectionRelationships);
+        }
+
+        foreach ($this->getAllUserRelationships() as $userRelationship) {
+            $relationships[] = $userRelationship;
         }
 
         return collect($relationships)->sortBy('index')->values()->all();
     }
 
+    /**
+     * Returns the names of all collections that have relationships.
+     *
+     * @return string[]
+     */
     public function getCollections()
     {
-        return array_keys($this->relationships);
+        return array_keys($this->relationships['entries']);
     }
 
     /**

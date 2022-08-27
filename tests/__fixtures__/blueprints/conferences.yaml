@@ -60,6 +60,17 @@ sections:
           instructions_position: above
           read_only: false
       -
+        handle: managed_by
+        field:
+          max_items: 1
+          mode: select
+          display: 'Managed By'
+          type: users
+          icon: users
+          listable: hidden
+          instructions_position: above
+          visibility: visible
+      -
         handle: special_sponsors
         field:
           collapse: false
@@ -97,6 +108,16 @@ sections:
           listable: hidden
           instructions_position: above
           read_only: false
+      -
+        handle: conference_users
+        field:
+          mode: select
+          display: 'Conference Users'
+          type: users
+          icon: users
+          listable: hidden
+          instructions_position: above
+          visibility: visible
   sidebar:
     display: Sidebar
     fields:

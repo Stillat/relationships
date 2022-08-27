@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Statamic\Facades\Entry;
+use Statamic\Facades\User;
 use Stillat\Relationships\Support\Facades\Relate;
 
 class OneToManyDeleteTest extends RelationshipTestCase
@@ -30,5 +31,21 @@ class OneToManyDeleteTest extends RelationshipTestCase
 
         $this->assertSame([], Entry::find('authors-1')->get('books', []));
         $this->assertSame([], Entry::find('authors-2')->get('books', []));
+    }
+
+    public function test_one_to_many_user_delete()
+    {
+        Relate::clear()
+            ->oneToMany('conferences.managed_by', 'user:managing_conferences');
+
+        Entry::find('conferences-1')->set('managed_by', 'user-1')->save();
+        Entry::find('conferences-2')->set('managed_by', 'user-1')->save();
+
+        $this->assertSame(['conferences-1', 'conferences-2'], User::find('user-1')->get('managing_conferences', []));
+        Entry::find('conferences-1')->delete();
+        $this->assertSame(['conferences-2'], User::find('user-1')->get('managing_conferences', []));
+
+        Entry::find('conferences-2')->delete();
+        $this->assertSame([], User::find('user-1')->get('managing_conferences', []));
     }
 }

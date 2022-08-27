@@ -2,6 +2,7 @@
 
 namespace Stillat\Relationships\Processors;
 
+use Statamic\Contracts\Auth\User;
 use Statamic\Contracts\Entries\EntryRepository;
 use Statamic\Entries\Entry;
 use Statamic\Entries\EntryCollection;
@@ -62,14 +63,16 @@ class RelationshipProcessor
      */
     protected $effectedEntries = [];
 
+    /**
+     * All users that are affected by the current change.
+     *
+     * @var User[]
+     */
+    protected $effectedUsers = [];
+
     protected $isDelete = false;
 
     protected $isDry = false;
-
-    public function __construct(EntryRepository $entries)
-    {
-        $this->entries = $entries;
-    }
 
     public function setIsDeleting($isDeleting = true)
     {
@@ -154,8 +157,9 @@ class RelationshipProcessor
         UpdatedRelatedEntryEvent::dispatch($entry, $this->pristineEntry, $relationship);
     }
 
-    protected function getEntryData($fieldName)
+    protected function getEntryData($relationship)
     {
+        $fieldName = $relationship->leftField;
         $pristine = [];
         $updated = [];
 
@@ -182,12 +186,43 @@ class RelationshipProcessor
         return ListComparator::compare($pristine, $updated);
     }
 
-    protected function getEffectedEntries($entryIds)
+    /**
+     * @param EntryRelationship $relationship
+     * @param string[] $entryIds
+     * @return void
+     */
+    protected function getEffectedEntries($relationship, $entryIds)
     {
-        /** @var EntryCollection $entries */
-        $entries = $this->entries->query()->whereIn('id', $entryIds)->get();
+        // The right-hand side of the relationship will indicate what is being updated.
+        if ($relationship->rightType == 'entry') {
+            if ($this->entries == null) {
+                $this->entries = app(EntryRepository::class);
+            }
 
-        $this->effectedEntries = $entries->keyBy('id')->all();
+            /** @var EntryCollection $entries */
+            $entries = $this->entries->query()->whereIn('id', $entryIds)->get();
+
+            $this->effectedEntries = $entries->keyBy('id')->all();
+        } else if ($relationship->rightType == 'user') {
+            $users = $this->getUsersByIds($entryIds);
+
+            $this->effectedUsers = $users->keyBy('id')->all();
+        }
+    }
+
+    private function getUsersByIds($userIds)
+    {
+        $users = [];
+
+        foreach ($userIds as $userId) {
+            $user = \Statamic\Facades\User::find($userId);
+
+            if ($user != null) {
+                $users[] = $user;
+            }
+        }
+
+        return collect($users);
     }
 
     public function process($relationships)
@@ -202,7 +237,7 @@ class RelationshipProcessor
                 continue;
             }
 
-            $this->processRelationship($relationship, $this->getEntryData($relationship->leftField));
+            $this->processRelationship($relationship, $this->getEntryData($relationship));
         }
     }
 
@@ -216,7 +251,7 @@ class RelationshipProcessor
             return;
         }
 
-        $this->getEffectedEntries($results->getEffectedIds());
+        $this->getEffectedEntries($relationship, $results->getEffectedIds());
 
         if ($relationship->type == EntryRelationship::TYPE_MANY_TO_MANY) {
             $this->processManyToMany($results, $relationship);
@@ -232,13 +267,46 @@ class RelationshipProcessor
     }
 
     /**
+     * Determines if the relationship should be processed for the provided entitiy.
+     *
+     * @param EntryRelationship $relationship The relationship.
+     * @param string $id The related entity ID.
+     * @return bool
+     */
+    protected function shouldProcessRelationship(EntryRelationship $relationship, $id)
+    {
+        if ($relationship->rightType == 'entry' && ! array_key_exists($id, $this->effectedEntries)) {
+            return false;
+        }
+
+        if ($relationship->rightType == 'user' && ! array_key_exists($id, $this->effectedUsers)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function getEffectedEntity(EntryRelationship $relationship, $id)
+    {
+        if ($relationship->rightType == 'entry') {
+            return $this->effectedEntries[$id];
+        } elseif ($relationship->rightType == 'user') {
+            return $this->effectedUsers[$id];
+        }
+
+        return null;
+    }
+
+    /**
      * @param  EntryRelationship  $relationship
      * @param  Entry  $entry
      */
     protected function removeFieldValue($relationship, $entry)
     {
-        if ($entry->collectionHandle() != $relationship->rightCollection) {
-            return;
+        if ($relationship->rightType == 'entry') {
+            if ($entry->collectionHandle() != $relationship->rightCollection) {
+                return;
+            }
         }
 
         $rightReference = $entry->get($relationship->rightField, null);
@@ -258,8 +326,10 @@ class RelationshipProcessor
      */
     protected function setFieldValue($relationship, $entry)
     {
-        if ($entry->collectionHandle() != $relationship->rightCollection) {
-            return;
+        if ($relationship->rightType == 'entry') {
+            if ($entry->collectionHandle() != $relationship->rightCollection) {
+                return;
+            }
         }
 
         $rightReference = $entry->get($relationship->rightField, null);
@@ -273,12 +343,14 @@ class RelationshipProcessor
 
     /**
      * @param  EntryRelationship  $relationship
-     * @param  Entry  $entry
+     * @param  Entry|User  $entry
      */
     protected function addItemToEntry($relationship, $entry)
     {
-        if ($entry->collectionHandle() != $relationship->rightCollection) {
-            return;
+        if ($relationship->rightType == 'entry') {
+            if ($entry->collectionHandle() != $relationship->rightCollection) {
+                return;
+            }
         }
 
         $rightReference = $entry->get($relationship->rightField, []);
@@ -299,8 +371,10 @@ class RelationshipProcessor
      */
     protected function removeItemFromEntry($relationship, $entry)
     {
-        if ($entry->collectionHandle() != $relationship->rightCollection) {
-            return;
+        if ($relationship->rightType == 'entry') {
+            if ($entry->collectionHandle() != $relationship->rightCollection) {
+                return;
+            }
         }
 
         $rightReference = $entry->get($relationship->rightField, []);

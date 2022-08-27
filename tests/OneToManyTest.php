@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Statamic\Facades\Entry;
+use Statamic\Facades\User;
 use Stillat\Relationships\Support\Facades\Relate;
 
 class OneToManyTest extends RelationshipTestCase
@@ -30,5 +31,30 @@ class OneToManyTest extends RelationshipTestCase
 
         $this->assertSame([], Entry::find('authors-1')->get('books', []));
         $this->assertSame([], Entry::find('authors-2')->get('books', []));
+    }
+
+    public function test_one_to_many_user_relationships()
+    {
+        Relate::clear()
+            ->oneToMany('conferences.managed_by', 'user:managing_conferences');
+
+        Entry::find('conferences-1')->set('managed_by', 'user-1')->save();
+
+        $this->assertSame(['conferences-1'], User::find('user-1')->get('managing_conferences', []));
+
+        Entry::find('conferences-2')->set('managed_by', 'user-1')->save();
+
+        $this->assertSame(['conferences-1', 'conferences-2'], User::find('user-1')->get('managing_conferences', []));
+
+        Entry::find('conferences-2')->set('managed_by', 'user-2')->save();
+
+        $this->assertSame(['conferences-1'], User::find('user-1')->get('managing_conferences', []));
+        $this->assertSame(['conferences-2'], User::find('user-2')->get('managing_conferences', []));
+
+        Entry::find('conferences-1')->set('managed_by', null)->save();
+        Entry::find('conferences-2')->set('managed_by', null)->save();
+
+        $this->assertSame([], User::find('user-1')->get('managing_conferences', []));
+        $this->assertSame([], User::find('user-2')->get('managing_conferences', []));
     }
 }

@@ -9,13 +9,13 @@ trait ProcessesOneToOne
 {
     protected function processOneToOne(ComparisonResult $results, EntryRelationship $relationship)
     {
-        if (! empty($results->added) && count($results->added) == 1 && array_key_exists($results->added[0], $this->effectedEntries)) {
-            $this->setFieldValue($relationship, $this->effectedEntries[$results->added[0]]);
+        if (! empty($results->added) && count($results->added) == 1 && $this->shouldProcessRelationship($relationship, $results->added[0])) {
+            $this->setFieldValue($relationship, $this->getEffectedEntity($relationship, $results->added[0]));
         }
 
         foreach ($results->removed as $removedId) {
-            if (array_key_exists($removedId, $this->effectedEntries)) {
-                $this->removeItemFromEntry($relationship, $this->effectedEntries[$removedId]);
+            if ($this->shouldProcessRelationship($relationship, $removedId)) {
+                $this->removeItemFromEntry($relationship, $this->getEffectedEntity($relationship, $removedId));
             }
         }
     }

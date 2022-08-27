@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Statamic\Facades\Entry;
+use Statamic\Facades\User;
 use Stillat\Relationships\Support\Facades\Relate;
 
 class ManyToOneTest extends RelationshipTestCase
@@ -30,5 +31,24 @@ class ManyToOneTest extends RelationshipTestCase
 
         $this->assertSame([], Entry::find('authors-1')->get('books', []));
         $this->assertSame([], Entry::find('authors-2')->get('books', []));
+    }
+
+    public function test_many_to_one_user_relationship()
+    {
+        Relate::clear()
+            ->manyToOne('user:managing_conferences', 'conferences.managed_by');
+
+        Entry::find('conferences-1')->set('managed_by', 'user-1')->save();
+
+        $this->assertSame(['conferences-1'], User::find('user-1')->get('managing_conferences', []));
+
+        Entry::find('conferences-2')->set('managed_by', 'user-1')->save();
+
+        $this->assertSame(['conferences-1', 'conferences-2'], User::find('user-1')->get('managing_conferences', []));
+
+        Entry::find('conferences-2')->set('managed_by', 'user-2')->save();
+
+        $this->assertSame(['conferences-1'], User::find('user-1')->get('managing_conferences', []));
+        $this->assertSame(['conferences-2'], User::find('user-2')->get('managing_conferences', []));
     }
 }

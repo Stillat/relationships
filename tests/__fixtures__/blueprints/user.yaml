@@ -1,0 +1,55 @@
+sections:
+  main:
+    display: Main
+    fields:
+      -
+        handle: name
+        field:
+          type: text
+          display: Name
+      -
+        handle: email
+        field:
+          type: text
+          input: email
+          display: 'Email Address'
+      -
+        handle: user_conferences
+        field:
+          mode: default
+          create: true
+          collections:
+            - conferences
+          display: 'User Conferences'
+          type: entries
+          icon: entries
+          listable: hidden
+          instructions_position: above
+          visibility: visible
+      -
+        handle: book
+        field:
+          max_items: 1
+          mode: default
+          create: true
+          collections:
+            - books
+          display: Book
+          type: entries
+          icon: entries
+          listable: hidden
+          instructions_position: above
+          visibility: visible
+      -
+        handle: managing_conferences
+        field:
+          mode: default
+          create: true
+          collections:
+            - conferences
+          display: 'Managing Conferences'
+          type: entries
+          icon: entries
+          listable: hidden
+          instructions_position: above
+          visibility: visible

@@ -10,14 +10,14 @@ trait ProcessesOneToMany
     protected function processOneToMany(ComparisonResult $results, EntryRelationship $relationship)
     {
         foreach ($results->added as $addedId) {
-            if (array_key_exists($addedId, $this->effectedEntries)) {
-                $this->setFieldValue($relationship, $this->effectedEntries[$addedId]);
+            if ($this->shouldProcessRelationship($relationship, $addedId)) {
+                $this->setFieldValue($relationship, $this->getEffectedEntity($relationship, $addedId));
             }
         }
 
         foreach ($results->removed as $removedId) {
-            if (array_key_exists($removedId, $this->effectedEntries)) {
-                $this->removeFieldValue($relationship, $this->effectedEntries[$removedId]);
+            if ($this->shouldProcessRelationship($relationship, $removedId)) {
+                $this->removeFieldValue($relationship, $this->getEffectedEntity($relationship, $removedId));
             }
         }
     }

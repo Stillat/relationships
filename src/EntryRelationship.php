@@ -11,6 +11,9 @@ class EntryRelationship
     const TYPE_ONE_TO_MANY = 3;
     const TYPE_MANY_TO_ONE = 4;
 
+    public $leftType = '';
+    public $rightType = '';
+
     public $index = 0;
     public $type = self::TYPE_MANY_TO_MANY;
     public $leftCollection = '';
@@ -35,9 +38,10 @@ class EntryRelationship
         $this->leftCollection = $collection;
     }
 
-    public function field($handle)
+    public function field($handle, $entityType)
     {
         $this->leftField = $handle;
+        $this->leftType = $entityType;
 
         return $this;
     }
@@ -49,9 +53,10 @@ class EntryRelationship
         return $this;
     }
 
-    public function through($rightCollectionFieldHandle)
+    public function through($rightCollectionFieldHandle, $entityType)
     {
         $this->rightField = $rightCollectionFieldHandle;
+        $this->rightType = $entityType;
 
         return $this;
     }

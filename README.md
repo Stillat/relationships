@@ -59,6 +59,42 @@ Entry Relationships supports the following types of relationships:
 * **One to Many**: An author may have written many books.
 * **One to One**: A specific job position may only be filled by one employee, and a single employee can only hold a single position at a time.
 
+### Supported Data Entities
+
+Entry Relationships supports the following data entities:
+
+* **Entries**: Collection entries.
+* **Users**: Individual users.
+
+By default, Entry Relationships will assume that the relationship is between entries for backwards compatibility. To
+create a relationship between users and your entries, you will need to prefix the relationship with the data type to
+use when evaluating the relationship.
+
+As an example, to create a relationship between a collection of conferences and the users who are managing those
+conferences, we could use something similar to the following:
+
+```php
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Stillat\Relationships\Support\Facades\Relate;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        Relate::manyToMany(
+            'user:managing_conferences',
+            'conferences.managed_by'
+        );
+    }
+}
+```
+
+Note that we only have to specify the field name when referencing users.
+
 ### Creating a Many to Many Relationship
 
 > Example: Conferences can have many sponsors. Each sponsor can support many conferences.
