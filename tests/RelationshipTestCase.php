@@ -38,7 +38,6 @@ class RelationshipTestCase extends BaseTestCase
 
         $this->blueprints[$name] = $blueprint;
 
-
         BlueprintRepository::shouldReceive('find')->zeroOrMoreTimes()->with($path)->andReturn($blueprint);
         BlueprintRepository::shouldReceive('in')->zeroOrMoreTimes()->with($path)->andReturn(collect([
             $name => $blueprint,
