@@ -35,9 +35,9 @@ class ListRelationshipsCommand extends Command
         foreach ($relationships as $relationship) {
             $list[] = [
                 'index' => $relationship->index,
-                'left_collection' => '['. $relationship->leftType .'].'.$relationship->leftCollection,
-                'left_field' => '['. $relationship->leftType .'].'.$relationship->leftField,
-                'right_collection' => '['. $relationship->rightType .'].'.$relationship->rightCollection,
+                'left_collection' => '['.$relationship->leftType.'].'.$relationship->leftCollection,
+                'left_field' => '['.$relationship->leftType.'].'.$relationship->leftField,
+                'right_collection' => '['.$relationship->rightType.'].'.$relationship->rightCollection,
                 'right_field' => $relationship->rightField,
                 'type_description' => $relationship->getRelationshipDescription(),
                 'with_events' => $relationship->withEvents ? 'Yes' : 'No',

@@ -2,8 +2,8 @@
 
 namespace Stillat\Relationships;
 
-use InvalidArgumentException;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Stillat\Relationships\Processors\RelationshipProcessor;
 
 class RelationshipManager
@@ -75,7 +75,7 @@ class RelationshipManager
     {
         if ($leftType == 'entry') {
             return $this->collection($left);
-        } else if ($leftType == 'user') {
+        } elseif ($leftType == 'user') {
             return $this->user($left);
         }
     }
@@ -83,11 +83,11 @@ class RelationshipManager
     private function getRelationship($left, $right)
     {
         if (! in_array($left[0], $this->validEntityTypes)) {
-            throw new InvalidArgumentException($left[0]. ' is not a valid entity type.');
+            throw new InvalidArgumentException($left[0].' is not a valid entity type.');
         }
 
         if (! in_array($right[0], $this->validEntityTypes)) {
-            throw new InvalidArgumentException($right[0]. ' is not a valid entity type.');
+            throw new InvalidArgumentException($right[0].' is not a valid entity type.');
         }
 
         return $this->getRelationshipBuilder($left[1], $left[0])
@@ -230,7 +230,7 @@ class RelationshipManager
     /**
      * Returns all relationships for the provided entity type.
      *
-     * @param string $entityType The entity type.
+     * @param  string  $entityType  The entity type.
      * @return array|EntryRelationship
      */
     private function getEntityTypeRelationships($entityType)

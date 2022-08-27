@@ -8,7 +8,6 @@ use Stillat\Relationships\RelationshipManager;
 
 class UserSavedListener
 {
-
     /**
      * @var RelationshipManager
      */
@@ -24,7 +23,7 @@ class UserSavedListener
         /** @var User $user */
         $user = $event->user;
 
-        if (!$this->manager->hasUserRelationships()) {
+        if (! $this->manager->hasUserRelationships()) {
             return;
         }
 

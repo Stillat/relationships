@@ -187,8 +187,8 @@ class RelationshipProcessor
     }
 
     /**
-     * @param EntryRelationship $relationship
-     * @param string[] $entryIds
+     * @param  EntryRelationship  $relationship
+     * @param  string[]  $entryIds
      * @return void
      */
     protected function getEffectedEntries($relationship, $entryIds)
@@ -203,7 +203,7 @@ class RelationshipProcessor
             $entries = $this->entries->query()->whereIn('id', $entryIds)->get();
 
             $this->effectedEntries = $entries->keyBy('id')->all();
-        } else if ($relationship->rightType == 'user') {
+        } elseif ($relationship->rightType == 'user') {
             $users = $this->getUsersByIds($entryIds);
 
             $this->effectedUsers = $users->keyBy('id')->all();
@@ -269,8 +269,8 @@ class RelationshipProcessor
     /**
      * Determines if the relationship should be processed for the provided entitiy.
      *
-     * @param EntryRelationship $relationship The relationship.
-     * @param string $id The related entity ID.
+     * @param  EntryRelationship  $relationship  The relationship.
+     * @param  string  $id  The related entity ID.
      * @return bool
      */
     protected function shouldProcessRelationship(EntryRelationship $relationship, $id)
