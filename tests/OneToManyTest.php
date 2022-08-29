@@ -33,6 +33,41 @@ class OneToManyTest extends RelationshipTestCase
         $this->assertSame([], Entry::find('authors-2')->get('books', []));
     }
 
+    public function test_explicit_one_to_many()
+    {
+        Relate::clear();
+        Relate::collection('books')
+                ->field('author')
+            ->isRelatedTo('authors')
+                ->through('books')
+            ->manyToOne();
+
+        Relate::collection('authors')
+                ->field('books')
+            ->isRelatedTo('books')
+                ->through('author')
+            ->oneToMany();
+
+        Entry::find('books-1')->set('author', 'authors-1')->save();
+
+        $this->assertSame(['books-1'], Entry::find('authors-1')->get('books', []));
+
+        Entry::find('books-2')->set('author', 'authors-1')->save();
+
+        $this->assertSame(['books-1', 'books-2'], Entry::find('authors-1')->get('books', []));
+
+        Entry::find('books-2')->set('author', 'authors-2')->save();
+
+        $this->assertSame(['books-1'], Entry::find('authors-1')->get('books', []));
+        $this->assertSame(['books-2'], Entry::find('authors-2')->get('books', []));
+
+        Entry::find('books-1')->set('author', null)->save();
+        Entry::find('books-2')->set('author', null)->save();
+
+        $this->assertSame([], Entry::find('authors-1')->get('books', []));
+        $this->assertSame([], Entry::find('authors-2')->get('books', []));
+    }
+
     public function test_one_to_many_user_relationships()
     {
         Relate::clear()

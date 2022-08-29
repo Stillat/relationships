@@ -38,7 +38,7 @@ class EntryRelationship
         $this->leftCollection = $collection;
     }
 
-    public function field($handle, $entityType)
+    public function field($handle, $entityType = 'entry')
     {
         $this->leftField = $handle;
         $this->leftType = $entityType;
@@ -53,7 +53,7 @@ class EntryRelationship
         return $this;
     }
 
-    public function through($rightCollectionFieldHandle, $entityType)
+    public function through($rightCollectionFieldHandle, $entityType = 'entry')
     {
         $this->rightField = $rightCollectionFieldHandle;
         $this->rightType = $entityType;
