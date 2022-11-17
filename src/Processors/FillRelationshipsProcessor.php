@@ -41,7 +41,11 @@ class FillRelationshipsProcessor
     public function fillAll()
     {
         foreach ($this->manager->getAll() as $relationships) {
-            $this->fillRelationships($relationships);
+            if ($relationships instanceof EntryRelationship) {
+                $this->fillRelationship($relationships);
+            } else if (is_array($relationships)) {
+                $this->fillRelationships($relationships);
+            }
         }
     }
 
