@@ -43,7 +43,7 @@ class FillRelationshipsProcessor
         foreach ($this->manager->getAll() as $relationships) {
             if ($relationships instanceof EntryRelationship) {
                 $this->fillRelationship($relationships);
-            } else if (is_array($relationships)) {
+            } elseif (is_array($relationships)) {
                 $this->fillRelationships($relationships);
             }
         }
