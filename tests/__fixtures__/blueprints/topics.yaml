@@ -1,0 +1,48 @@
+title: Topic
+sections:
+  main:
+    display: Main
+    fields:
+      -
+        handle: title
+        field:
+          type: text
+          required: true
+          display: Title
+          validate:
+            - required
+      -
+        handle: posts
+        field:
+          mode: default
+          create: true
+          display: Posts
+          type: entries
+          icon: entries
+          listable: hidden
+          instructions_position: above
+          visibility: visible
+          always_save: false
+      -
+        handle: single_post
+        field:
+          mode: default
+          create: true
+          max_items: 1
+          display: Posts
+          type: entries
+          icon: entries
+          listable: hidden
+          instructions_position: above
+          visibility: visible
+          always_save: false
+  sidebar:
+    display: Sidebar
+    fields:
+      -
+        handle: slug
+        field:
+          type: slug
+          required: true
+          validate:
+            - required

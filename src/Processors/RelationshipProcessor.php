@@ -4,8 +4,11 @@ namespace Stillat\Relationships\Processors;
 
 use Statamic\Contracts\Auth\User;
 use Statamic\Contracts\Entries\EntryRepository;
+use Statamic\Contracts\Taxonomies\TermRepository;
 use Statamic\Entries\Entry;
 use Statamic\Entries\EntryCollection;
+use Statamic\Taxonomies\LocalizedTerm;
+use Statamic\Taxonomies\Term;
 use Stillat\Relationships\Comparisons\ComparisonResult;
 use Stillat\Relationships\Comparisons\ListComparator;
 use Stillat\Relationships\EntryRelationship;
@@ -69,6 +72,13 @@ class RelationshipProcessor
      * @var User[]
      */
     protected $effectedUsers = [];
+
+    /**
+     * All terms that are affected by the current change.
+     *
+     * @var Term[]
+     */
+    protected $effectedTerms = [];
 
     protected $isDelete = false;
 
@@ -150,7 +160,11 @@ class RelationshipProcessor
             if ($relationship->withEvents) {
                 $entry->save();
             } else {
-                $entry->saveQuietly();
+                if ($entry instanceof LocalizedTerm) {
+                    $entry->term()->saveQuietly();
+                } else {
+                    $entry->saveQuietly();
+                }
             }
         }
 
@@ -207,6 +221,10 @@ class RelationshipProcessor
             $users = $this->getUsersByIds($entryIds);
 
             $this->effectedUsers = $users->keyBy('id')->all();
+        } elseif ($relationship->rightType == 'term') {
+            $terms = $this->getTermsByIds($entryIds);
+
+            $this->effectedTerms = $terms->keyBy('slug')->all();
         }
     }
 
@@ -223,6 +241,24 @@ class RelationshipProcessor
         }
 
         return collect($users);
+    }
+
+    private function getTermsByIds($termIds)
+    {
+        $terms = [];
+
+        /** @var TermRepository $termsRepository */
+        $termsRepository = app(TermRepository::class);
+
+        foreach ($termIds as $termId) {
+            $term = $termsRepository->query()->where('slug', $termId)->first();
+
+            if ($term != null) {
+                $terms[] = $term;
+            }
+        }
+
+        return collect($terms);
     }
 
     public function process($relationships)
@@ -283,6 +319,10 @@ class RelationshipProcessor
             return false;
         }
 
+        if ($relationship->rightType == 'term' && ! array_key_exists($id, $this->effectedTerms)) {
+            return false;
+        }
+
         return true;
     }
 
@@ -292,6 +332,8 @@ class RelationshipProcessor
             return $this->effectedEntries[$id];
         } elseif ($relationship->rightType == 'user') {
             return $this->effectedUsers[$id];
+        } elseif ($relationship->rightType == 'term') {
+            return $this->effectedTerms[$id];
         }
 
         return null;
@@ -388,6 +430,9 @@ class RelationshipProcessor
 
             $entry->set($relationship->rightField, array_values($rightReference));
 
+            $this->updateEntry($entry, $relationship);
+        } else {
+            $entry->set($relationship->rightField, null);
             $this->updateEntry($entry, $relationship);
         }
     }

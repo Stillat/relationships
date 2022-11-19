@@ -4,10 +4,14 @@ namespace Tests;
 
 use Facades\Statamic\Fields\BlueprintRepository;
 use Facades\Tests\Factories\EntryFactory;
+use Illuminate\Support\Str;
 use Statamic\Facades\Collection;
+use Statamic\Facades\Term;
 use Statamic\Facades\User;
 use Statamic\Facades\YAML;
 use Statamic\Fields\Blueprint;
+use Statamic\Taxonomies\LocalizedTerm;
+use Statamic\Taxonomies\Taxonomy;
 
 class RelationshipTestCase extends BaseTestCase
 {
@@ -21,6 +25,8 @@ class RelationshipTestCase extends BaseTestCase
 
         $this->createBlueprints();
         $this->createUserBlueprint();
+        $this->createTaxonomies();
+        $this->createTerms();
         $this->createCollections();
         $this->createCollectionEntries();
         $this->createUsers();
@@ -54,14 +60,21 @@ class RelationshipTestCase extends BaseTestCase
         $this->buildBlueprint($name, 'collections/'.$name);
     }
 
+    protected function makeTaxonomyBlueprint($name)
+    {
+        $this->buildBlueprint($name, 'taxonomies/'.$name);
+    }
+
     protected function createBlueprints()
     {
+        $this->makeTaxonomyBlueprint('topics');
         $this->makeBlueprint('authors');
         $this->makeBlueprint('books');
         $this->makeBlueprint('conferences');
         $this->makeBlueprint('employees');
         $this->makeBlueprint('positions');
         $this->makeBlueprint('sponsors');
+        $this->makeBlueprint('articles');
     }
 
     protected function createCollections()
@@ -72,6 +85,37 @@ class RelationshipTestCase extends BaseTestCase
         Collection::make('employees')->routes('employees/{slug}')->save();
         Collection::make('positions')->routes('positions/{slug}')->save();
         Collection::make('sponsors')->routes('sponsors/{slug}')->save();
+    }
+
+    protected function createTaxonomies()
+    {
+        \Statamic\Facades\Taxonomy::make('topics')->save();
+    }
+
+    protected function createTerms()
+    {
+        $terms = [
+            'one', 'two', 'three', 'four',
+        ];
+
+        foreach ($terms as $term) {
+            $title = 'Term ' . Str::ucfirst($term);
+
+            Term::make()->taxonomy('topics')->slug('topics-' . $term)->data([
+                'title' => $title,
+            ])->save();
+        }
+    }
+
+    /**
+     * Locate a taxonomy term by its slug.
+     *
+     * @param string $slug
+     * @return LocalizedTerm|null
+     */
+    protected function getTerm($slug)
+    {
+        return Term::query()->where('slug', $slug)->first();
     }
 
     protected function createUsers()
@@ -88,6 +132,7 @@ class RelationshipTestCase extends BaseTestCase
     private function createEntries($collection, $entries)
     {
         $count = 1;
+
         foreach ($entries as $entry) {
             $this->createEntry($collection, $collection.'-'.$count, $entry);
             $count += 1;
@@ -148,6 +193,21 @@ class RelationshipTestCase extends BaseTestCase
             [
                 'title' => 'Sponsor Two',
             ],
+        ]);
+
+        $this->createEntries('articles', [
+           [
+               'title' => 'Article One',
+           ],
+           [
+               'title' => 'Article Two',
+           ],
+           [
+               'title' => 'Article Three',
+           ],
+           [
+               'title' => 'Article Four',
+           ],
         ]);
     }
 }

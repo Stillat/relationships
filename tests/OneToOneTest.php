@@ -3,7 +3,9 @@
 namespace Tests;
 
 use Statamic\Facades\Entry;
+use Statamic\Facades\Term;
 use Statamic\Facades\User;
+use Stillat\Relationships\Listeners\TermSavingListener;
 use Stillat\Relationships\Support\Facades\Relate;
 
 class OneToOneTest extends RelationshipTestCase
@@ -33,5 +35,20 @@ class OneToOneTest extends RelationshipTestCase
 
         User::find('user-1')->set('book', null)->save();
         $this->assertNull(Entry::find('books-1')->get('book_author', null));
+    }
+
+    public function test_one_to_one_term_relationship()
+    {
+        Relate::clear()
+            ->oneToOne('term:topics.single_post', 'entry:articles.post_topic');
+
+        Entry::find('articles-1')->set('post_topic', 'topics-one')->save();
+
+        $this->assertSame('articles-1', $this->getTerm('topics-one')->get('single_post', null));
+
+        TermSavingListener::$break = true;
+        $this->getTerm('topics-one')->set('single_post', null)->save();
+
+        $this->assertNull(Entry::find('articles-1')->get('post_topic', null));
     }
 }

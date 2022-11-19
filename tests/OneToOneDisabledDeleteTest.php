@@ -37,4 +37,19 @@ class OneToOneDisabledDeleteTest extends RelationshipTestCase
 
         $this->assertSame('user-1', Entry::find('books-1')->get('book_author', null));
     }
+
+    public function test_one_to_one_term_delete_disabled()
+    {
+        Relate::clear()
+            ->oneToOne('term:topics.single_post', 'entry:articles.post_topic')
+            ->allowDelete(false);
+
+        Entry::find('articles-1')->set('post_topic', 'topics-one')->save();
+
+        $this->assertSame('articles-1', $this->getTerm('topics-one')->get('single_post', null));
+
+        $this->getTerm('topics-one')->delete();
+
+        $this->assertSame('topics-one', Entry::find('articles-1')->get('post_topic', null));
+    }
 }

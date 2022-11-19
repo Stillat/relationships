@@ -4,6 +4,7 @@ namespace Tests;
 
 use Statamic\Facades\Entry;
 use Statamic\Facades\User;
+use Stillat\Relationships\Listeners\TermDeletedListener;
 use Stillat\Relationships\Support\Facades\Relate;
 
 class OneToOneDeleteTest extends RelationshipTestCase
@@ -34,5 +35,20 @@ class OneToOneDeleteTest extends RelationshipTestCase
         User::find('user-1')->delete();
 
         $this->assertNull(Entry::find('books-1')->get('book_author', null));
+    }
+
+    public function test_one_to_one_term_delete()
+    {
+        Relate::clear()
+            ->oneToOne('term:topics.single_post', 'entry:articles.post_topic');
+
+        Entry::find('articles-1')->set('post_topic', 'topics-one')->save();
+
+        $this->assertSame('articles-1', $this->getTerm('topics-one')->get('single_post', null));
+
+        TermDeletedListener::$break = true;
+        $this->getTerm('topics-one')->delete();
+
+        $this->assertNull(Entry::find('articles-1')->get('post_topic', null));
     }
 }

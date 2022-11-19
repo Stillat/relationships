@@ -4,6 +4,7 @@ namespace Stillat\Relationships;
 
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use Statamic\Support\Arr;
 use Stillat\Relationships\Processors\RelationshipProcessor;
 
 class RelationshipManager
@@ -18,7 +19,7 @@ class RelationshipManager
      */
     protected $processor;
 
-    protected $validEntityTypes = ['entry', 'user'];
+    protected $validEntityTypes = ['entry', 'user', 'term'];
 
     public function __construct(RelationshipProcessor $processor)
     {
@@ -71,12 +72,30 @@ class RelationshipManager
         return $relationship;
     }
 
+    public function term($termName)
+    {
+        $relationship = new EntryRelationship();
+        $relationship->leftType = 'term';
+        $relationship->leftField = $termName;
+        $relationship->leftCollection = '[term]';
+
+        if (! array_key_exists('terms', $this->relationships)) {
+            $this->relationships['terms'] = [];
+        }
+
+        $this->relationships['terms'][] = $relationship;
+
+        return $relationship;
+    }
+
     protected function getRelationshipBuilder($left, $leftType)
     {
         if ($leftType == 'entry') {
             return $this->collection($left);
         } elseif ($leftType == 'user') {
             return $this->user($left);
+        } elseif ($leftType == 'term') {
+            return $this->term($left);
         }
     }
 
@@ -152,12 +171,63 @@ class RelationshipManager
     }
 
     /**
+     * Extracts collection and field information from relationship set notation.
+     *
+     * @param string $handles
+     * @return string[]
+     */
+    public static function extractCollections($handles)
+    {
+        $parts = explode(':', $handles, 2);
+        $type = $parts[0];
+        $parts = explode('.', $parts[1], 2);
+        $field = $parts[1];
+        $handles = str($parts[0])->substr(1, -1)->explode(',');
+
+        return $handles->map(function ($handle) use ($type, $field) {
+            return $type.':'.$handle.'.'.$field;
+        })->all();
+    }
+
+    /**
      * @param  string  $leftCollectionHandle
      * @param  string  $rightCollectionHandle
      * @return RelationshipProxy
      */
     public function manyToMany($leftCollectionHandle, $rightCollectionHandle)
     {
+        if (Str::contains($leftCollectionHandle, '{') || Str::contains($rightCollectionHandle, '{')) {
+            $left = self::extractCollections($leftCollectionHandle);
+            $right = self::extractCollections($rightCollectionHandle);
+            $inverted[] = [];
+            $relationships = collect(Arr::crossJoin($left, $right))->filter(function ($pair) use (&$inverted) {
+                $normal = $pair[0].':'.$pair[1];
+
+                if (in_array($normal, $inverted)) {
+                    return false;
+                }
+
+                $inverted[] = $pair[1].':'.$pair[0];
+
+                return true;
+            })->all();
+
+            $builtRelationships = [];
+
+            foreach ($relationships as $relationship) {
+                $leftCollectionHandle = $relationship[0];
+                $rightCollectionHandle = $relationship[1];
+
+                $this->buildRelationships($leftCollectionHandle, $rightCollectionHandle)->each(function (EntryRelationship $relationship) {
+                    $relationship->manyToMany();
+                })->each(function (EntryRelationship $relationship) use (&$builtRelationships) {
+                    $builtRelationships[] = $relationship;
+                });
+            }
+
+            return new RelationshipProxy(collect($builtRelationships));
+        }
+
         return new RelationshipProxy($this->buildRelationships($leftCollectionHandle, $rightCollectionHandle)->each(function (EntryRelationship $relationship) {
             $relationship->manyToMany();
         }));
@@ -201,6 +271,15 @@ class RelationshipManager
         }
 
         return count($this->relationships['users']) > 0;
+    }
+
+    public function hasTermRelationships()
+    {
+        if (! array_key_exists('terms', $this->relationships)) {
+            return false;
+        }
+
+        return count($this->relationships['terms']) > 0;
     }
 
     /**
@@ -262,6 +341,11 @@ class RelationshipManager
         return $this->getEntityTypeRelationships('users');
     }
 
+    public function getAllTermRelationships()
+    {
+        return $this->getEntityTypeRelationships('terms');
+    }
+
     public function getAllRelationships()
     {
         $relationships = [];
@@ -272,6 +356,10 @@ class RelationshipManager
 
         foreach ($this->getAllUserRelationships() as $userRelationship) {
             $relationships[] = $userRelationship;
+        }
+
+        foreach ($this->getAllTermRelationships() as $termRelationship) {
+            $relationships[] = $termRelationship;
         }
 
         return collect($relationships)->sortBy('index')->values()->all();

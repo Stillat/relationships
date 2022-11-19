@@ -41,6 +41,7 @@ class UserSavingListener
             }
         }
 
-        $this->manager->processor()->setIsDeleting(false)->setPristineDetails($user, ! $isUpdating);
+        $this->manager->processor()->setIsDeleting(false)
+            ->setPristineDetails($user, ! $isUpdating);
     }
 }
