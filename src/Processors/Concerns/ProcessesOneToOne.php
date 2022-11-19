@@ -4,7 +4,6 @@ namespace Stillat\Relationships\Processors\Concerns;
 
 use Stillat\Relationships\Comparisons\ComparisonResult;
 use Stillat\Relationships\EntryRelationship;
-use Stillat\Relationships\Listeners\TermSavingListener;
 
 trait ProcessesOneToOne
 {

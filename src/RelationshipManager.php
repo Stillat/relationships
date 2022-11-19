@@ -173,7 +173,7 @@ class RelationshipManager
     /**
      * Extracts collection and field information from relationship set notation.
      *
-     * @param string $handles
+     * @param  string  $handles
      * @return string[]
      */
     public static function extractCollections($handles)
