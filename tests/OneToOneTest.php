@@ -3,9 +3,7 @@
 namespace Tests;
 
 use Statamic\Facades\Entry;
-use Statamic\Facades\Term;
 use Statamic\Facades\User;
-use Stillat\Relationships\Listeners\TermSavingListener;
 use Stillat\Relationships\Support\Facades\Relate;
 
 class OneToOneTest extends RelationshipTestCase
@@ -46,7 +44,6 @@ class OneToOneTest extends RelationshipTestCase
 
         $this->assertSame('articles-1', $this->getTerm('topics-one')->get('single_post', null));
 
-        TermSavingListener::$break = true;
         $this->getTerm('topics-one')->set('single_post', null)->save();
 
         $this->assertNull(Entry::find('articles-1')->get('post_topic', null));
