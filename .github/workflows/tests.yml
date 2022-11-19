@@ -19,9 +19,7 @@ jobs:
         os: [ubuntu-latest]
         include:
           - laravel: 8.*
-            framework: ^8.48.0
           - laravel: 9.*
-            framework: ^9.0
           - os: windows-latest
             php: 7.4
             laravel: 8.*
