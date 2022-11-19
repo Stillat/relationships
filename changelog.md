@@ -2,6 +2,7 @@
 
 ## v1.2.0
 
+- Adds support for "term" relationships
 - Adds support for collection name "set" notation
 
 ## v1.1.2

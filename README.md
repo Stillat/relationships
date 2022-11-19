@@ -65,6 +65,7 @@ Entry Relationships supports the following data entities:
 
 * **Entries**: Collection entries.
 * **Users**: Individual users.
+* **Terms**: Taxonomy terms.
 
 By default, Entry Relationships will assume that the relationship is between entries for backwards compatibility. To
 create a relationship between users and your entries, you will need to prefix the relationship with the data type to
@@ -94,6 +95,28 @@ class AppServiceProvider extends ServiceProvider
 ```
 
 Note that we only have to specify the field name when referencing users.
+
+To create a Taxonomy Terms relationship, we must specify the entity type as well as the taxonomy name:
+
+```php
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Stillat\Relationships\Support\Facades\Relate;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        Relate::manyToMany(
+            'term:topics:posts',
+            'posts.topics'
+        );
+    }
+}
+````
 
 ### Creating a Many to Many Relationship
 
