@@ -8,7 +8,7 @@ use Stillat\Relationships\RelationshipManager;
 
 class TermDeletedListener
 {
-    /** @var RelationshipManager  */
+    /** @var RelationshipManager */
     protected $manager;
 
     public static $break = false;

@@ -99,9 +99,9 @@ class RelationshipTestCase extends BaseTestCase
         ];
 
         foreach ($terms as $term) {
-            $title = 'Term ' . Str::ucfirst($term);
+            $title = 'Term '.Str::ucfirst($term);
 
-            Term::make()->taxonomy('topics')->slug('topics-' . $term)->data([
+            Term::make()->taxonomy('topics')->slug('topics-'.$term)->data([
                 'title' => $title,
             ])->save();
         }
@@ -110,7 +110,7 @@ class RelationshipTestCase extends BaseTestCase
     /**
      * Locate a taxonomy term by its slug.
      *
-     * @param string $slug
+     * @param  string  $slug
      * @return LocalizedTerm|null
      */
     protected function getTerm($slug)
@@ -196,18 +196,18 @@ class RelationshipTestCase extends BaseTestCase
         ]);
 
         $this->createEntries('articles', [
-           [
-               'title' => 'Article One',
-           ],
-           [
-               'title' => 'Article Two',
-           ],
-           [
-               'title' => 'Article Three',
-           ],
-           [
-               'title' => 'Article Four',
-           ],
+            [
+                'title' => 'Article One',
+            ],
+            [
+                'title' => 'Article Two',
+            ],
+            [
+                'title' => 'Article Three',
+            ],
+            [
+                'title' => 'Article Four',
+            ],
         ]);
     }
 }

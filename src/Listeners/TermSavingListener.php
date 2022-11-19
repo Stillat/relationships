@@ -3,8 +3,8 @@
 namespace Stillat\Relationships\Listeners;
 
 use Statamic\Events\TermSaving;
-use Statamic\Taxonomies\Term;
 use Statamic\Facades\Term as TermFacade;
+use Statamic\Taxonomies\Term;
 use Stillat\Relationships\RelationshipManager;
 
 class TermSavingListener
