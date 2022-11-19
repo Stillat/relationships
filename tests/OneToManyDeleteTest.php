@@ -48,4 +48,20 @@ class OneToManyDeleteTest extends RelationshipTestCase
         Entry::find('conferences-2')->delete();
         $this->assertSame([], User::find('user-1')->get('managing_conferences', []));
     }
+
+    public function test_one_to_many_term_delete()
+    {
+        Relate::clear()
+            ->oneToMany('entry:articles.post_topic', 'term:topics.posts');
+
+        Entry::find('articles-1')->set('post_topic', 'topics-one')->save();
+        Entry::find('articles-2')->set('post_topic', 'topics-one')->save();
+
+        $this->assertSame(['articles-1', 'articles-2'], $this->getTerm('topics-one')->get('posts', []));
+        Entry::find('articles-1')->delete();
+        $this->assertSame(['articles-2'], $this->getTerm('topics-one')->get('posts', []));
+
+        Entry::find('articles-2')->delete();
+        $this->assertSame([], $this->getTerm('topics-one')->get('posts', []));
+    }
 }

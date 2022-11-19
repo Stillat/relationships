@@ -92,4 +92,29 @@ class OneToManyTest extends RelationshipTestCase
         $this->assertSame([], User::find('user-1')->get('managing_conferences', []));
         $this->assertSame([], User::find('user-2')->get('managing_conferences', []));
     }
+
+    public function test_one_to_many_term_relationships()
+    {
+        Relate::clear()
+            ->oneToMany('entry:articles.post_topic', 'term:topics.posts');
+
+        Entry::find('articles-1')->set('post_topic', 'topics-one')->save();
+
+        $this->assertSame(['articles-1'], $this->getTerm('topics-one')->get('posts', []));
+
+        Entry::find('articles-2')->set('post_topic', 'topics-one')->save();
+
+        $this->assertSame(['articles-1', 'articles-2'], $this->getTerm('topics-one')->get('posts', []));
+
+        Entry::find('articles-2')->set('post_topic', 'topics-two')->save();
+
+        $this->assertSame(['articles-1'], $this->getTerm('topics-one')->get('posts', []));
+        $this->assertSame(['articles-2'], $this->getTerm('topics-two')->get('posts', []));
+
+        Entry::find('articles-1')->set('post_topic', null)->save();
+        Entry::find('articles-2')->set('post_topic', null)->save();
+
+        $this->assertSame([], $this->getTerm('topics-one')->get('posts', []));
+        $this->assertSame([], $this->getTerm('topics-two')->get('posts', []));
+    }
 }
