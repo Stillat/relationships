@@ -57,4 +57,20 @@ class ManyToOneDeleteTest extends RelationshipTestCase
         $this->assertNull(Entry::find('conferences-1')->get('managed_by'));
         $this->assertNull(Entry::find('conferences-2')->get('managed_by'));
     }
+
+    public function test_many_to_one_term_delete()
+    {
+        Relate::clear()
+            ->manyToOne('term:topics.posts', 'entry:articles.post_topic');
+
+        Entry::find('articles-1')->set('post_topic', 'topics-one')->save();
+        Entry::find('articles-2')->set('post_topic', 'topics-one')->save();
+
+        $this->assertSame(['articles-1', 'articles-2'], $this->getTerm('topics-one')->get('posts', []));
+        Entry::find('articles-1')->delete();
+        $this->assertSame(['articles-2'], $this->getTerm('topics-one')->get('posts', []));
+
+        Entry::find('articles-2')->delete();
+        $this->assertSame([], $this->getTerm('topics-one')->get('posts', []));
+    }
 }
