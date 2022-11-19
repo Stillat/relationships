@@ -53,4 +53,29 @@ class ManyToManyDeleteTest extends RelationshipTestCase
         $this->assertSame(['conferences-2'], User::find('user-1')->get('user_conferences', []));
         $this->assertSame([], User::find('user-2')->get('user_conferences', []));
     }
+
+    public function test_many_to_many_term_delete()
+    {
+        Relate::clear()
+            ->manyToMany('term:topics.posts', 'entry:articles.topics');
+
+        Entry::find('articles-1')->set('topics', [
+            'topics-one',
+            'topics-two',
+        ])->save();
+
+        Entry::find('articles-2')->set('topics', [
+            'topics-one',
+        ])->save();
+
+        Entry::find('articles-3')->set('topics', [
+            'topics-two',
+        ])->save();
+
+        $this->getTerm('topics-one')->delete();
+        $this->getTerm('topics-two')->delete();
+
+        $this->assertSame([], Entry::find('articles-1')->get('topics', []));
+        $this->assertSame([], Entry::find('articles-2')->get('topics', []));
+    }
 }

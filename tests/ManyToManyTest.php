@@ -56,4 +56,27 @@ class ManyToManyTest extends RelationshipTestCase
         $this->assertSame(['conferences-2'], User::find('user-1')->get('user_conferences', []));
         $this->assertSame(['conferences-1'], User::find('user-2')->get('user_conferences', []));
     }
+
+    public function test_many_to_many_term_relationships()
+    {
+        Relate::clear()
+            ->manyToMany('term:topics.posts', 'entry:articles.topics');
+
+        Entry::find('articles-1')->set('topics', [
+            'topics-one',
+            'topics-two',
+        ])->save();
+
+        $this->assertSame(['articles-1'], $this->getTerm('topics-one')->get('posts', []));
+        $this->assertSame(['articles-1'], $this->getTerm('topics-two')->get('posts', []));
+
+        Entry::find('articles-1')->set('topics', ['topics-two'])->save();
+
+        $this->assertSame(['articles-1'], $this->getTerm('topics-two')->get('posts', []));
+
+        Entry::find('articles-1')->set('topics', [])->save();
+
+        $this->assertSame([], $this->getTerm('topics-one')->get('posts', []));
+        $this->assertSame([], $this->getTerm('topics-two')->get('posts', []));
+    }
 }

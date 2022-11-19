@@ -55,4 +55,31 @@ class ManyToManyDisabledDeleteTest extends RelationshipTestCase
         $this->assertSame(['conferences-1', 'conferences-2'], User::find('user-1')->get('user_conferences', []));
         $this->assertSame(['conferences-1'], User::find('user-2')->get('user_conferences', []));
     }
+
+    public function test_many_to_many_term_deletes_can_be_disabled()
+    {
+        Relate::clear()
+            ->manyToMany('term:topics.posts', 'entry:articles.topics')
+            ->allowDelete(false);
+
+        Entry::find('articles-1')->set('topics', [
+            'topics-one',
+            'topics-two',
+        ])->save();
+
+        Entry::find('articles-2')->set('topics', [
+            'topics-one',
+        ])->save();
+
+        Entry::find('articles-3')->set('topics', [
+            'topics-two',
+        ])->save();
+
+        $this->getTerm('topics-one')->delete();
+        $this->getTerm('topics-two')->delete();
+
+        $this->assertSame(['topics-one', 'topics-two'], Entry::find('articles-1')->get('topics', []));
+        $this->assertSame(['topics-one'], Entry::find('articles-2')->get('topics', []));
+        $this->assertSame(['topics-two'], Entry::find('articles-3')->get('topics', []));
+    }
 }
