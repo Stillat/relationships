@@ -29,6 +29,14 @@ class ListComparator
             $b = [$b];
         }
 
+        if (!is_array($a)) {
+            $a = [$a];
+        }
+
+        if (!is_array($b)) {
+            $b = [$b];
+        }
+
         $results = new ComparisonResult;
 
         $results->added = array_diff($b, $a);
