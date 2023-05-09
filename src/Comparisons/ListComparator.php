@@ -29,11 +29,11 @@ class ListComparator
             $b = [$b];
         }
 
-        if (!is_array($a)) {
+        if (! is_array($a)) {
             $a = [$a];
         }
 
-        if (!is_array($b)) {
+        if (! is_array($b)) {
             $b = [$b];
         }
 
