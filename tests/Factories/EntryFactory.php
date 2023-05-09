@@ -86,7 +86,6 @@ class EntryFactory
             ->collection($this->createCollection())
             ->slug($this->slug)
             ->data($this->data)
-            ->date($this->date)
             ->origin($this->origin)
             ->published($this->published);
 

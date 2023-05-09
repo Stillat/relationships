@@ -15,6 +15,7 @@ jobs:
       matrix:
         php: [7.4, 8.0, 8.1]
         laravel: [8.*, 9.*]
+        statamic: [3.3.*, 3.4.*, 4.*]
         stability: [prefer-lowest, prefer-stable]
         os: [ubuntu-latest]
         include:
@@ -32,7 +33,7 @@ jobs:
           - laravel: 9.*
             php: 7.4
 
-    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
+    name: P${{ matrix.php }} - L${{ matrix.laravel }} - L${{ matrix.statamic }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
     steps:
       - name: Checkout code
@@ -60,6 +61,7 @@ jobs:
       - name: Install dependencies
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" --no-interaction --no-update
+          composer require "statamic/cms:${{ matrix.statamic }}" --no-interaction --no-update
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       - name: Execute tests
