@@ -11,7 +11,6 @@ class EntryFactory
     protected $id;
     protected $slug;
     protected $data;
-    protected $date;
     protected $published;
     protected $order;
     protected $locale;
@@ -51,13 +50,6 @@ class EntryFactory
         return $this;
     }
 
-    public function date($date)
-    {
-        $this->date = $date;
-
-        return $this;
-    }
-
     public function published($published)
     {
         $this->published = $published;
@@ -86,7 +78,6 @@ class EntryFactory
             ->collection($this->createCollection())
             ->slug($this->slug)
             ->data($this->data)
-            ->date($this->date)
             ->origin($this->origin)
             ->published($this->published);
 
@@ -121,7 +112,6 @@ class EntryFactory
         $this->id = null;
         $this->slug = null;
         $this->data = [];
-        $this->date = null;
         $this->published = true;
         $this->order = null;
         $this->locale = 'en';
