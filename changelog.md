@@ -1,5 +1,9 @@
 # Change Log
 
+## v2.0.0
+
+- Statamic 4 Support 🎉
+
 ## v1.2.0
 
 - Adds support for "term" relationships
