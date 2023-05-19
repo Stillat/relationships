@@ -397,6 +397,8 @@ class RelationshipProcessor
 
         $rightReference = $entry->get($relationship->rightField, []);
 
+        if ($rightReference == null) { $rightReference = []; }
+
         if (in_array($this->entryId, $rightReference)) {
             return;
         }
