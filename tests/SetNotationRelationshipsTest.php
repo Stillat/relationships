@@ -20,6 +20,7 @@ class SetNotationRelationshipsTest extends RelationshipTestCase
             'entry:articles.related',
         ], RelationshipManager::extractCollections($left));
     }
+
     public function test_it_extracts_collection_names_without_sets()
     {
         Relate::clear()->manyToMany(
