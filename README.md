@@ -211,6 +211,66 @@ class AppServiceProvider extends ServiceProvider
 
 The `manyToMany` method will automatically define the inverse relationship for you. It is *not* necessary to define a many to many relationship from sponsors to conferences.
 
+If you need to create multiple many-to-many relationships, you may choose to use set syntax, which providers a shortcut for defining multiple relationships. For example, to
+relate many collections to a taxonomy, you could use the following:
+
+```php
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Stillat\Relationships\Support\Facades\Relate;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        Relate::manyToMany(
+            'term:categories.field_name',
+            'entry:{collection1,collection2,collection3,collection4}.field_name'
+        );
+    }
+}
+```
+
+The above example will create a many-to-many relationship between the `categories` taxonomy and the `field_name` field, and is equivalent to the following:
+
+```php
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Stillat\Relationships\Support\Facades\Relate;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        Relate::manyToMany(
+            'term:categories.field_name',
+            'entry:collection1.field_name'
+        );
+        
+        Relate::manyToMany(
+            'term:categories.field_name',
+            'entry:collection2.field_name'
+        );
+
+        Relate::manyToMany(
+            'term:categories.field_name',
+            'entry:collection3.field_name'
+        );
+
+        Relate::manyToMany(
+            'term:categories.field_name',
+            'entry:collection4.field_name'
+        );
+    }
+}
+```
+
 ### Creating a One to Many Relationship
 
 > Example: Many books can be written by one author. Each author can write many books.

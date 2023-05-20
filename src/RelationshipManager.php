@@ -182,7 +182,12 @@ class RelationshipManager
         $type = $parts[0];
         $parts = explode('.', $parts[1], 2);
         $field = $parts[1];
-        $handles = collect(explode(',', Str::substr($parts[0], 1, -1)));
+
+        if (ctype_punct(mb_substr($parts[0], 0, 1))) {
+            $parts[0] = Str::substr($parts[0], 1, -1);
+        }
+
+        $handles = collect(explode(',', $parts[0]));
 
         return $handles->map(function ($handle) use ($type, $field) {
             return $type.':'.$handle.'.'.$field;
