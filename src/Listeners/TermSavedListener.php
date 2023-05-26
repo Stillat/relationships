@@ -27,7 +27,7 @@ class TermSavedListener
 
         $this->manager->processor()->setUpdatedEntryDetails($term);
 
-        $relationships = $this->manager->getAllTermRelationships();
+        $relationships = $this->manager->getTermRelationshipsFor($term->taxonomy()->handle());
 
         $this->manager->processor()->process($relationships);
     }

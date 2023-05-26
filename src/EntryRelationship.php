@@ -14,6 +14,8 @@ class EntryRelationship
     public $leftType = '';
     public $rightType = '';
 
+    public $taxonomyName = '';
+
     public $index = 0;
     public $type = self::TYPE_MANY_TO_MANY;
     public $leftCollection = '';
