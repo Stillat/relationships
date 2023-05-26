@@ -133,7 +133,12 @@ class RelationshipProcessor
     public function setUpdatedEntryDetails($entryData)
     {
         $this->updatedEntry = $entryData;
-        $this->entryId = $this->updatedEntry->id();
+
+        if ($entryData instanceof Term) {
+            $this->entryId = $this->updatedEntry->slug();
+        } else {
+            $this->entryId = $this->updatedEntry->id();
+        }
 
         return $this;
     }
