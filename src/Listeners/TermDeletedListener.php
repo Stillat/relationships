@@ -27,7 +27,7 @@ class TermDeletedListener
             return;
         }
 
-        $relationships = $this->manager->getAllTermRelationships();
+        $relationships = $this->manager->getTermRelationshipsFor($term->taxonomy()->handle());
 
         $this->manager->processor()->setIsDeleting()->setEntryId($term->slug())
             ->setPristineDetails($term, false)->process($relationships);

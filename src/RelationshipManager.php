@@ -78,6 +78,7 @@ class RelationshipManager
         $relationship->leftType = 'term';
         $relationship->leftField = $termName;
         $relationship->leftCollection = '[term]';
+        $relationship->taxonomyName = $termName;
 
         if (! array_key_exists('terms', $this->relationships)) {
             $this->relationships['terms'] = [];
@@ -349,6 +350,13 @@ class RelationshipManager
     public function getAllTermRelationships()
     {
         return $this->getEntityTypeRelationships('terms');
+    }
+
+    public function getTermRelationshipsFor($term)
+    {
+        return collect($this->getAllTermRelationships())->filter(function (EntryRelationship $relationship) use ($term) {
+            return $relationship->leftType == 'term' && $relationship->taxonomyName == $term;
+        })->all();
     }
 
     public function getAllRelationships()
