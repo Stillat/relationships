@@ -116,15 +116,19 @@ class RelationshipManager
                 ->through($right[2], $right[0]);
     }
 
-    private function buildRelationships($leftCollectionHandle, $rightCollectionHandle)
+    private function buildOneToOneRelationships($relationships)
     {
-        $left = $this->getFieldDetails($leftCollectionHandle);
-        $right = $this->getFieldDetails($rightCollectionHandle);
+        $builtRelationships = [];
 
-        $leftRelationship = $this->getRelationship($left, $right);
-        $rightRelationship = $this->getRelationship($right, $left)->isAutomaticInverse();
+        foreach ($relationships as $relationship) {
+            $left = $this->getFieldDetails($relationship[0]);
+            $right = $this->getFieldDetails($relationship[1]);
 
-        return collect([$leftRelationship, $rightRelationship]);
+            $builtRelationships[] = $this->getRelationship($left, $right)->oneToOne();
+            $builtRelationships[] = $this->getRelationship($right, $left)->oneToOne()->isAutomaticInverse();
+        }
+
+        return new RelationshipProxy($builtRelationships);
     }
 
     /**
@@ -134,9 +138,22 @@ class RelationshipManager
      */
     public function oneToOne($leftCollectionHandle, $rightCollectionHandle)
     {
-        return new RelationshipProxy($this->buildRelationships($leftCollectionHandle, $rightCollectionHandle)->each(function (EntryRelationship $relationship) {
-            $relationship->oneToOne();
-        }));
+        return $this->buildOneToOneRelationships($this->getRelationshipItems($leftCollectionHandle, $rightCollectionHandle));
+    }
+
+    private function buildOneToManyRelationships($relationships)
+    {
+        $builtRelationships = [];
+
+        foreach ($relationships as $relationship) {
+            $left = $this->getFieldDetails($relationship[0]);
+            $right = $this->getFieldDetails($relationship[1]);
+
+            $builtRelationships[] = $this->getRelationship($left, $right)->manyToOne();
+            $builtRelationships[] = $this->getRelationship($right, $left)->oneToMany()->isAutomaticInverse();
+        }
+
+        return new RelationshipProxy($builtRelationships);
     }
 
     /**
@@ -146,13 +163,22 @@ class RelationshipManager
      */
     public function oneToMany($leftCollectionHandle, $rightCollectionHandle)
     {
-        $left = $this->getFieldDetails($leftCollectionHandle);
-        $right = $this->getFieldDetails($rightCollectionHandle);
+        return $this->buildOneToManyRelationships($this->getRelationshipItems($leftCollectionHandle, $rightCollectionHandle));
+    }
 
-        return new RelationshipProxy([
-            $this->getRelationship($left, $right)->manyToOne(),
-            $this->getRelationship($right, $left)->oneToMany()->isAutomaticInverse(),
-        ]);
+    private function buildManyToOneRelationships($relationships)
+    {
+        $builtRelationships = [];
+
+        foreach ($relationships as $relationship) {
+            $left = $this->getFieldDetails($relationship[0]);
+            $right = $this->getFieldDetails($relationship[1]);
+
+            $builtRelationships[] = $this->getRelationship($left, $right)->oneToOne();
+            $builtRelationships[] = $this->getRelationship($right, $left)->manyToOne()->isAutomaticInverse();
+        }
+
+        return new RelationshipProxy($builtRelationships);
     }
 
     /**
@@ -162,13 +188,7 @@ class RelationshipManager
      */
     public function manyToOne($leftCollectionHandle, $rightCollectionHandle)
     {
-        $left = $this->getFieldDetails($leftCollectionHandle);
-        $right = $this->getFieldDetails($rightCollectionHandle);
-
-        return new RelationshipProxy([
-            $this->getRelationship($left, $right)->oneToMany(),
-            $this->getRelationship($right, $left)->manyToOne()->isAutomaticInverse(),
-        ]);
+        return $this->buildManyToOneRelationships($this->getRelationshipItems($leftCollectionHandle, $rightCollectionHandle));
     }
 
     /**
@@ -179,6 +199,10 @@ class RelationshipManager
      */
     public static function extractCollections($handles)
     {
+        if (! Str::contains($handles, '{')) {
+            return [$handles];
+        }
+
         $parts = explode(':', $handles, 2);
         $type = $parts[0];
         $parts = explode('.', $parts[1], 2);
@@ -195,13 +219,10 @@ class RelationshipManager
         })->all();
     }
 
-    /**
-     * @param  string  $leftCollectionHandle
-     * @param  string  $rightCollectionHandle
-     * @return RelationshipProxy
-     */
-    public function manyToMany($leftCollectionHandle, $rightCollectionHandle)
+    private function getRelationshipItems($leftCollectionHandle, $rightCollectionHandle)
     {
+        $relationships = [];
+
         if (Str::contains($leftCollectionHandle, '{') || Str::contains($rightCollectionHandle, '{')) {
             $left = self::extractCollections($leftCollectionHandle);
             $right = self::extractCollections($rightCollectionHandle);
@@ -217,26 +238,36 @@ class RelationshipManager
 
                 return true;
             })->all();
-
-            $builtRelationships = [];
-
-            foreach ($relationships as $relationship) {
-                $leftCollectionHandle = $relationship[0];
-                $rightCollectionHandle = $relationship[1];
-
-                $this->buildRelationships($leftCollectionHandle, $rightCollectionHandle)->each(function (EntryRelationship $relationship) {
-                    $relationship->manyToMany();
-                })->each(function (EntryRelationship $relationship) use (&$builtRelationships) {
-                    $builtRelationships[] = $relationship;
-                });
-            }
-
-            return new RelationshipProxy(collect($builtRelationships));
+        } else {
+            $relationships[] = [$leftCollectionHandle, $rightCollectionHandle];
         }
 
-        return new RelationshipProxy($this->buildRelationships($leftCollectionHandle, $rightCollectionHandle)->each(function (EntryRelationship $relationship) {
-            $relationship->manyToMany();
-        }));
+        return $relationships;
+    }
+
+    private function buildManyToManyRelationships($relationships)
+    {
+        $builtRelationships = [];
+
+        foreach ($relationships as $relationship) {
+            $left = $this->getFieldDetails($relationship[0]);
+            $right = $this->getFieldDetails($relationship[1]);
+
+            $builtRelationships[] = $this->getRelationship($left, $right)->manyToMany();
+            $builtRelationships[] = $this->getRelationship($right, $left)->manyToMany()->isAutomaticInverse();
+        }
+
+        return new RelationshipProxy($builtRelationships);
+    }
+
+    /**
+     * @param  string  $leftCollectionHandle
+     * @param  string  $rightCollectionHandle
+     * @return RelationshipProxy
+     */
+    public function manyToMany($leftCollectionHandle, $rightCollectionHandle)
+    {
+        return $this->buildManyToManyRelationships(($this->getRelationshipItems($leftCollectionHandle, $rightCollectionHandle)));
     }
 
     protected function getFieldDetails($handle)
