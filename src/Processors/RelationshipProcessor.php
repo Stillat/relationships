@@ -248,7 +248,7 @@ class RelationshipProcessor
         return collect($users);
     }
 
-    private function getTermsByIds(EntryRelationship  $relationship, $termIds)
+    private function getTermsByIds(EntryRelationship $relationship, $termIds)
     {
         $terms = [];
 
