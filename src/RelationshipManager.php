@@ -267,7 +267,7 @@ class RelationshipManager
      */
     public function manyToMany($leftCollectionHandle, $rightCollectionHandle)
     {
-        return $this->buildManyToManyRelationships(($this->getRelationshipItems($leftCollectionHandle, $rightCollectionHandle)));
+        return $this->buildManyToManyRelationships($this->getRelationshipItems($leftCollectionHandle, $rightCollectionHandle));
     }
 
     protected function getFieldDetails($handle)
