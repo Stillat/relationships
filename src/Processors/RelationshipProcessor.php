@@ -227,7 +227,7 @@ class RelationshipProcessor
 
             $this->effectedUsers = $users->keyBy('id')->all();
         } elseif ($relationship->rightType == 'term') {
-            $terms = $this->getTermsByIds($entryIds);
+            $terms = $this->getTermsByIds($relationship, $entryIds);
 
             $this->effectedTerms = $terms->keyBy('slug')->all();
         }
@@ -248,7 +248,7 @@ class RelationshipProcessor
         return collect($users);
     }
 
-    private function getTermsByIds($termIds)
+    private function getTermsByIds(EntryRelationship $relationship, $termIds)
     {
         $terms = [];
 
@@ -256,7 +256,7 @@ class RelationshipProcessor
         $termsRepository = app(TermRepository::class);
 
         foreach ($termIds as $termId) {
-            $term = $termsRepository->query()->where('slug', $termId)->first();
+            $term = $termsRepository->whereTaxonomy($relationship->rightCollection)->where('slug', $termId)->first();
 
             if ($term != null) {
                 $terms[] = $term;
