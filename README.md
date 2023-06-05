@@ -111,7 +111,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Relate::manyToMany(
-            'term:topics:posts',
+            'term:topics.posts',
             'posts.topics'
         );
     }
