@@ -7,7 +7,7 @@ use Statamic\Entries\Entry;
 use Statamic\Events\EntrySaving;
 use Stillat\Relationships\RelationshipManager;
 
-class EntrySavingListener
+class EntrySavingListener extends BaseListener
 {
     /**
      * @var RelationshipManager
@@ -47,6 +47,8 @@ class EntrySavingListener
                 $isUpdating = true;
             }
         }
+
+        $entry = $this->checkForDatabaseObject($entry);
 
         $this->manager->processor()->setIsDeleting(false)->setPristineDetails($entry, ! $isUpdating);
     }

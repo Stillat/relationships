@@ -7,7 +7,7 @@ use Statamic\Events\UserSaving;
 use Statamic\Facades\User as UserFacade;
 use Stillat\Relationships\RelationshipManager;
 
-class UserSavingListener
+class UserSavingListener extends BaseListener
 {
     /**
      * @var RelationshipManager
@@ -40,6 +40,8 @@ class UserSavingListener
                 $isUpdating = true;
             }
         }
+
+        $user = $this->checkForDatabaseObject($user);
 
         $this->manager->processor()->setIsDeleting(false)
             ->setPristineDetails($user, ! $isUpdating);

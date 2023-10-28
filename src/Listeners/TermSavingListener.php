@@ -7,7 +7,7 @@ use Statamic\Facades\Term as TermFacade;
 use Statamic\Taxonomies\Term;
 use Stillat\Relationships\RelationshipManager;
 
-class TermSavingListener
+class TermSavingListener extends BaseListener
 {
     /** @var RelationshipManager */
     protected $manager;
@@ -38,6 +38,8 @@ class TermSavingListener
                 $isUpdating = true;
             }
         }
+
+        $term = $this->checkForDatabaseObject($term);
 
         $this->manager->processor()->setIsDeleting(false)
             ->setPristineDetails($term, ! $isUpdating);

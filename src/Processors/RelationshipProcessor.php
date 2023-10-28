@@ -2,6 +2,7 @@
 
 namespace Stillat\Relationships\Processors;
 
+use Illuminate\Support\Str;
 use Statamic\Contracts\Auth\User;
 use Statamic\Contracts\Entries\EntryRepository;
 use Statamic\Contracts\Taxonomies\TermRepository;
@@ -183,7 +184,7 @@ class RelationshipProcessor
         $updated = [];
 
         if ($this->pristineEntry != null && $this->isNewEntry == false) {
-            $pristine = $this->getFieldValue($fieldName, $this->pristineEntry, []);
+            $pristine = $this->getPristineValue($fieldName, $this->pristineEntry, []);
         }
 
         if ($this->isDelete) {
@@ -404,6 +405,10 @@ class RelationshipProcessor
 
         if ($rightReference == null) {
             $rightReference = [];
+        }
+
+        if (is_string($rightReference) && Str::startsWith($rightReference, '[') && Str::endsWith($rightReference, ']')) {
+            $rightReference = json_decode($rightReference, true);
         }
 
         if (in_array($this->entryId, $rightReference)) {
