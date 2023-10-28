@@ -39,9 +39,9 @@ class ListComparator
 
         $results = new ComparisonResult;
 
-        $results->added = array_diff($b, $a);
-        $results->same = array_intersect($a, $b);
-        $results->removed = array_diff($a, $b);
+        $results->added = array_values(array_diff($b, $a));
+        $results->same = array_values(array_intersect($a, $b));
+        $results->removed = array_values(array_diff($a, $b));
 
         return $results;
     }
