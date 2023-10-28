@@ -9,12 +9,19 @@ use Statamic\Facades\Entry;
 class EntryFactory
 {
     protected $id;
+
     protected $slug;
+
     protected $data;
+
     protected $published;
+
     protected $order;
+
     protected $locale;
+
     protected $origin;
+
     protected $collection;
 
     public function __construct()

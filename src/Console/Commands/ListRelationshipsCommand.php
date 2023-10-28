@@ -9,6 +9,7 @@ class ListRelationshipsCommand extends Command
 {
     protected $signature = 'relate:list
                                 {collection? : An optional collection handle}';
+
     protected $description = 'Lists all defined entry relationships';
 
     protected $manager;

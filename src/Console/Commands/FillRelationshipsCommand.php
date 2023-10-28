@@ -16,6 +16,7 @@ class FillRelationshipsCommand extends Command
     protected $signature = 'relate:fill 
                                 {collection? : An optional collection handle}
                                 {--dry : When present, no entries will be updated}';
+
     protected $description = 'Fills in any missing values from newly created relationships';
 
     /**

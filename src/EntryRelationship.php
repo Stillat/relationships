@@ -7,26 +7,37 @@ class EntryRelationship
     protected static $relationshipCount = 0;
 
     const TYPE_MANY_TO_MANY = 1;
+
     const TYPE_ONE_TO_ONE = 2;
+
     const TYPE_ONE_TO_MANY = 3;
+
     const TYPE_MANY_TO_ONE = 4;
 
     public $leftType = '';
+
     public $rightType = '';
 
     public $taxonomyName = '';
 
     public $index = 0;
+
     public $type = self::TYPE_MANY_TO_MANY;
+
     public $leftCollection = '';
+
     public $rightCollection = '';
+
     public $leftField = '';
+
     public $rightField = '';
 
     public $inverseIndex = null;
+
     public $isAutomaticInverse = false;
 
     public $withEvents = false;
+
     public $allowDelete = true;
 
     public function __construct()

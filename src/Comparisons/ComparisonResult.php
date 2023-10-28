@@ -5,7 +5,9 @@ namespace Stillat\Relationships\Comparisons;
 class ComparisonResult
 {
     public $same = [];
+
     public $added = [];
+
     public $removed = [];
 
     public function getSameCount()
