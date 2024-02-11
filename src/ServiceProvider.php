@@ -14,6 +14,7 @@ use Statamic\Events\UserSaving;
 use Statamic\Providers\AddonServiceProvider;
 use Stillat\Relationships\Console\Commands\FillRelationshipsCommand;
 use Stillat\Relationships\Console\Commands\ListRelationshipsCommand;
+use Stillat\Relationships\Events\EventStack;
 use Stillat\Relationships\Listeners\EntryDeletedListener;
 use Stillat\Relationships\Listeners\EntrySavedListener;
 use Stillat\Relationships\Listeners\EntrySavingListener;
@@ -65,6 +66,10 @@ class ServiceProvider extends AddonServiceProvider
 
     public function register()
     {
+        $this->app->singleton(EventStack::class, function ($app) {
+            return new EventStack();
+        });
+
         $this->app->singleton(RelationshipManager::class, function ($app) {
             return new RelationshipManager($app->make(RelationshipProcessor::class));
         });
