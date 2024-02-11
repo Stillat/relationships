@@ -6,6 +6,7 @@ use Statamic\Contracts\Entries\EntryRepository;
 use Statamic\Entries\Entry;
 use Statamic\Events\EntrySaving;
 use Stillat\Relationships\RelationshipManager;
+use Stillat\Relationships\Support\Facades\EventStack;
 
 class EntrySavingListener extends BaseListener
 {
@@ -27,11 +28,17 @@ class EntrySavingListener extends BaseListener
 
     public function handle(EntrySaving $event)
     {
+        EventStack::increment();
+
         /** @var Entry $entry */
         $entry = $event->entry;
         $collection = $entry->collectionHandle();
 
         if (! $this->manager->hasRelationshipsForCollection($collection)) {
+            return;
+        }
+
+        if (EventStack::count() > 1) {
             return;
         }
 
