@@ -37,15 +37,15 @@ class OneToManyTest extends RelationshipTestCase
     {
         Relate::clear();
         Relate::collection('books')
-                ->field('author')
+            ->field('author')
             ->isRelatedTo('authors')
-                ->through('books')
+            ->through('books')
             ->manyToOne();
 
         Relate::collection('authors')
-                ->field('books')
+            ->field('books')
             ->isRelatedTo('books')
-                ->through('author')
+            ->through('author')
             ->oneToMany();
 
         Entry::find('books-1')->set('author', 'authors-1')->save();

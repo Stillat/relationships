@@ -62,7 +62,7 @@ abstract class BaseTestCase extends \Orchestra\Testbench\TestCase
         ];
 
         foreach ($configs as $config) {
-            $app['config']->set("statamic.$config", require(__DIR__."/__fixtures__/config/{$config}.php"));
+            $app['config']->set("statamic.$config", require (__DIR__."/__fixtures__/config/{$config}.php"));
         }
 
         $app['config']->set('statamic.antlers.version', 'runtime');

@@ -111,9 +111,9 @@ class RelationshipManager
         }
 
         return $this->getRelationshipBuilder($left[1], $left[0])
-                ->field($left[2], $left[0])
+            ->field($left[2], $left[0])
             ->isRelatedTo($right[1])
-                ->through($right[2], $right[0]);
+            ->through($right[2], $right[0]);
     }
 
     private function buildOneToOneRelationships($relationships)
