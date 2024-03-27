@@ -25,11 +25,11 @@ use Stillat\Relationships\Processors\Concerns\ProcessesOneToOne;
 
 class RelationshipProcessor
 {
-    use ProcessesManyToMany,
-        ProcessesOneToOne,
+    use GetsFieldValues,
+        ProcessesManyToMany,
         ProcessesManyToOne,
         ProcessesOneToMany,
-        GetsFieldValues;
+        ProcessesOneToOne;
 
     /**
      * @var EntryRepository
@@ -160,6 +160,7 @@ class RelationshipProcessor
      */
     protected function updateEntry($entry, $relationship)
     {
+        ray('updating', $entry);
         UpdatingRelatedEntryEvent::dispatch($entry, $this->pristineEntry, $relationship);
 
         if (! $this->isDry) {
@@ -222,15 +223,24 @@ class RelationshipProcessor
             /** @var EntryCollection $entries */
             $entries = $this->entries->query()->whereIn('id', $entryIds)->get();
 
-            $this->effectedEntries = $entries->keyBy('id')->all();
+            $this->effectedEntries = array_merge(
+                $this->effectedEntries,
+                $entries->keyBy('id')->all()
+            );
         } elseif ($relationship->rightType == 'user') {
             $users = $this->getUsersByIds($entryIds);
 
-            $this->effectedUsers = $users->keyBy('id')->all();
+            $this->effectedUsers = array_merge(
+                $this->effectedUsers,
+                $users->keyBy('id')->all()
+            );
         } elseif ($relationship->rightType == 'term') {
             $terms = $this->getTermsByIds($relationship, $entryIds);
 
-            $this->effectedTerms = $terms->keyBy('slug')->all();
+            $this->effectedTerms = array_merge(
+                $this->effectedTerms,
+                $terms->keyBy('slug')->all()
+            );
         }
     }
 
