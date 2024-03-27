@@ -165,7 +165,11 @@ class RelationshipProcessor
 
         if (! $this->isDry) {
             if ($relationship->withEvents) {
-                $entry->save();
+                if ($entry instanceof LocalizedTerm) {
+                    $entry->term()->save();
+                } else {
+                    $entry->save();
+                }
             } else {
                 if ($entry instanceof LocalizedTerm) {
                     $entry->term()->saveQuietly();
