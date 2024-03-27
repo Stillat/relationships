@@ -85,6 +85,15 @@ class RelationshipProcessor
 
     protected $isDry = false;
 
+    protected $observed = [];
+
+    protected $processingManyToMany = false;
+
+    public function isProcessingManyToMany()
+    {
+        return $this->processingManyToMany;
+    }
+
     public function setIsDeleting($isDeleting = true)
     {
         $this->isDelete = $isDeleting;
@@ -160,7 +169,6 @@ class RelationshipProcessor
      */
     protected function updateEntry($entry, $relationship)
     {
-        ray('updating', $entry);
         UpdatingRelatedEntryEvent::dispatch($entry, $this->pristineEntry, $relationship);
 
         if (! $this->isDry) {
@@ -460,7 +468,13 @@ class RelationshipProcessor
 
             $this->updateEntry($entry, $relationship);
         } else {
-            $entry->set($relationship->rightField, null);
+            $value = null;
+
+            if (is_array($rightReference) && count($rightReference) > 0) {
+                $value = $rightReference;
+            }
+
+            $entry->set($relationship->rightField, $value);
             $this->updateEntry($entry, $relationship);
         }
     }

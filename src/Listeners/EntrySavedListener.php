@@ -31,7 +31,7 @@ class EntrySavedListener
             return;
         }
 
-        if (EventStack::count() > 0) {
+        if (EventStack::count() > 0 || $this->manager->processor()->isProcessingManyToMany()) {
             return;
         }
 
