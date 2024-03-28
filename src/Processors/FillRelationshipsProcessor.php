@@ -3,6 +3,7 @@
 namespace Stillat\Relationships\Processors;
 
 use Statamic\Contracts\Entries\EntryRepository;
+use Statamic\Facades\Taxonomy;
 use Stillat\Relationships\Comparisons\ComparisonResult;
 use Stillat\Relationships\EntryRelationship;
 use Stillat\Relationships\Processors\Concerns\GetsFieldValues;
@@ -61,19 +62,10 @@ class FillRelationshipsProcessor
         }
     }
 
-    protected function fillRelationship(EntryRelationship $relationship)
+    protected function processData($data, EntryRelationship $relationship)
     {
-        $collectionEntries = $this->entries->query()
-            ->whereIn('collection', [$relationship->leftCollection])
-            ->where($relationship->leftField, '!=', null)
-            ->get();
-
-        if (count($collectionEntries) == 0) {
-            return;
-        }
-
-        foreach ($collectionEntries as $entry) {
-            $related = $this->getFieldValue($relationship->leftField, $entry, null);
+        foreach ($data as $item) {
+            $related = $this->getFieldValue($relationship->leftField, $item, null);
 
             if ($related == null) {
                 continue;
@@ -86,8 +78,39 @@ class FillRelationshipsProcessor
             $mockResults = new ComparisonResult();
             $mockResults->added = $related;
 
-            $this->manager->processor()->setEntryId($entry->id())
+            $this->manager->processor()->setEntryId($item->id())
                 ->processRelationship($relationship, $mockResults);
         }
+    }
+
+    protected function fillTaxonomyRelationship(EntryRelationship $relationship)
+    {
+        $terms = Taxonomy::find($relationship->taxonomyName)->queryTerms()->get();
+
+        if (count($terms) === 0) {
+            return;
+        }
+
+        $this->processData($terms, $relationship);
+    }
+
+    protected function fillRelationship(EntryRelationship $relationship)
+    {
+        if ($relationship->leftCollection === '[term]') {
+            $this->fillTaxonomyRelationship($relationship);
+
+            return;
+        }
+
+        $collectionEntries = $this->entries->query()
+            ->whereIn('collection', [$relationship->leftCollection])
+            ->where($relationship->leftField, '!=', null)
+            ->get();
+
+        if (count($collectionEntries) == 0) {
+            return;
+        }
+
+        $this->processData($collectionEntries, $relationship);
     }
 }

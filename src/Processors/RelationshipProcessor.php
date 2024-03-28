@@ -25,11 +25,11 @@ use Stillat\Relationships\Processors\Concerns\ProcessesOneToOne;
 
 class RelationshipProcessor
 {
-    use ProcessesManyToMany,
-        ProcessesOneToOne,
+    use GetsFieldValues,
+        ProcessesManyToMany,
         ProcessesManyToOne,
         ProcessesOneToMany,
-        GetsFieldValues;
+        ProcessesOneToOne;
 
     /**
      * @var EntryRepository
@@ -84,6 +84,17 @@ class RelationshipProcessor
     protected $isDelete = false;
 
     protected $isDry = false;
+
+    protected $observed = [];
+
+    protected $processingRelationships = false;
+
+    protected $dependencies = [];
+
+    public function isProcessingRelationships()
+    {
+        return $this->processingRelationships;
+    }
 
     public function setIsDeleting($isDeleting = true)
     {
@@ -164,7 +175,11 @@ class RelationshipProcessor
 
         if (! $this->isDry) {
             if ($relationship->withEvents) {
-                $entry->save();
+                if ($entry instanceof LocalizedTerm) {
+                    $entry->term()->save();
+                } else {
+                    $entry->save();
+                }
             } else {
                 if ($entry instanceof LocalizedTerm) {
                     $entry->term()->saveQuietly();
@@ -222,15 +237,24 @@ class RelationshipProcessor
             /** @var EntryCollection $entries */
             $entries = $this->entries->query()->whereIn('id', $entryIds)->get();
 
-            $this->effectedEntries = $entries->keyBy('id')->all();
+            $this->effectedEntries = array_merge(
+                $this->effectedEntries,
+                $entries->keyBy('id')->all()
+            );
         } elseif ($relationship->rightType == 'user') {
             $users = $this->getUsersByIds($entryIds);
 
-            $this->effectedUsers = $users->keyBy('id')->all();
+            $this->effectedUsers = array_merge(
+                $this->effectedUsers,
+                $users->keyBy('id')->all()
+            );
         } elseif ($relationship->rightType == 'term') {
             $terms = $this->getTermsByIds($relationship, $entryIds);
 
-            $this->effectedTerms = $terms->keyBy('slug')->all();
+            $this->effectedTerms = array_merge(
+                $this->effectedTerms,
+                $terms->keyBy('slug')->all()
+            );
         }
     }
 
@@ -285,9 +309,11 @@ class RelationshipProcessor
 
     public function processRelationship($relationship, $results)
     {
+        $this->processingRelationships = true;
         UpdatingRelationshipsEvent::dispatch($relationship, $results);
 
         if (! $results->hasChanges()) {
+            $this->processingRelationships = false;
             UpdatedRelationshipsEvent::dispatch($relationship, $results);
 
             return;
@@ -304,6 +330,7 @@ class RelationshipProcessor
         } elseif ($relationship->type == EntryRelationship::TYPE_MANY_TO_ONE) {
             $this->processManyToOne($results, $relationship);
         }
+        $this->processingRelationships = false;
 
         UpdatedRelationshipsEvent::dispatch($relationship, $results);
     }
@@ -330,6 +357,25 @@ class RelationshipProcessor
         }
 
         return true;
+    }
+
+    protected function getDependency(EntryRelationship $relationship, $id)
+    {
+        $data = null;
+
+        if ($relationship->rightType == 'entry') {
+            $data = $this->effectedEntries[$id];
+        } elseif ($relationship->rightType == 'user') {
+            $data = $this->effectedUsers[$id];
+        } elseif ($relationship->rightType == 'term') {
+            $data = $this->effectedTerms[$id];
+        }
+
+        if ($data === null || ! method_exists($data, 'get')) {
+            return null;
+        }
+
+        return $data->get($relationship->rightField);
     }
 
     protected function getEffectedEntity(EntryRelationship $relationship, $id)
@@ -446,7 +492,13 @@ class RelationshipProcessor
 
             $this->updateEntry($entry, $relationship);
         } else {
-            $entry->set($relationship->rightField, null);
+            $value = null;
+
+            if (is_array($rightReference) && count($rightReference) > 0) {
+                $value = $rightReference;
+            }
+
+            $entry->set($relationship->rightField, $value);
             $this->updateEntry($entry, $relationship);
         }
     }

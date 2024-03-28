@@ -9,6 +9,8 @@ trait ProcessesManyToMany
 {
     protected function processManyToMany(ComparisonResult $results, EntryRelationship $relationship)
     {
+        $this->processingRelationships = true;
+
         foreach ($results->added as $addedId) {
             if (! $this->shouldProcessRelationship($relationship, $addedId)) {
                 continue;
@@ -24,5 +26,7 @@ trait ProcessesManyToMany
 
             $this->removeItemFromEntry($relationship, $this->getEffectedEntity($relationship, $removedId));
         }
+
+        $this->processingRelationships = false;
     }
 }

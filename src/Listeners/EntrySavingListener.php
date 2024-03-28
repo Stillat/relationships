@@ -38,7 +38,7 @@ class EntrySavingListener extends BaseListener
             return;
         }
 
-        if (EventStack::count() > 1) {
+        if (EventStack::count() > 1 || $this->manager->processor()->isProcessingRelationships()) {
             return;
         }
 
