@@ -14,6 +14,10 @@ class EntryRelationship
 
     const TYPE_MANY_TO_ONE = 4;
 
+    public ?EntryRelationship $origin = null;
+
+    public ?EntryRelationship $inverted = null;
+
     public $leftType = '';
 
     public $rightType = '';
@@ -115,6 +119,14 @@ class EntryRelationship
         return $this;
     }
 
+    public function withOriginRelationship(EntryRelationship $relationship)
+    {
+        $this->origin = $relationship;
+        $relationship->inverted = $this;
+
+        return $this;
+    }
+
     public function isAutomaticInverse($isInverse = true, $inverseIndex = null)
     {
         $this->isAutomaticInverse = $isInverse;
@@ -126,6 +138,15 @@ class EntryRelationship
         }
 
         return $this;
+    }
+
+    public function getInverse()
+    {
+        if ($this->isAutomaticInverse) {
+            return $this->origin;
+        }
+
+        return $this->inverted;
     }
 
     /**

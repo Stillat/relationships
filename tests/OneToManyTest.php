@@ -117,4 +117,54 @@ class OneToManyTest extends RelationshipTestCase
         $this->assertSame([], $this->getTerm('topics-one')->get('posts', []));
         $this->assertSame([], $this->getTerm('topics-two')->get('posts', []));
     }
+
+    public function test_one_to_many_updates_dependents()
+    {
+        Relate::clear();
+        Relate::oneToMany(
+            'books.author',
+            'authors.books'
+        );
+
+        Entry::find('books-1')->set('author', 'authors-1')->save();
+        Entry::find('books-2')->set('author', 'authors-1')->save();
+        Entry::find('books-3')->set('author', 'authors-1')->save();
+
+        Entry::find('books-4')->set('author', 'authors-1')->save();
+        Entry::find('books-5')->set('author', 'authors-2')->save();
+
+        Entry::find('authors-1')->set('books', [
+            'books-1',
+            'books-2',
+            'books-3',
+        ])->save();
+
+        Entry::find('authors-2')->set('books', [
+            'books-4',
+            'books-5',
+        ])->save();
+
+        Entry::find('authors-1')->set('books', [
+            'books-1',
+            'books-2',
+            'books-3',
+            'books-4',
+        ])->save();
+
+        $this->assertSame(['books-5'], Entry::find('authors-2')->get('books'));
+
+        $this->assertSame([
+            'books-1',
+            'books-2',
+            'books-3',
+            'books-4',
+        ], Entry::find('authors-1')->get('books'));
+
+        $this->assertSame('authors-1', Entry::find('books-1')->get('author'));
+        $this->assertSame('authors-1', Entry::find('books-2')->get('author'));
+        $this->assertSame('authors-1', Entry::find('books-3')->get('author'));
+        $this->assertSame('authors-1', Entry::find('books-4')->get('author'));
+
+        $this->assertSame('authors-2', Entry::find('books-5')->get('author'));
+    }
 }

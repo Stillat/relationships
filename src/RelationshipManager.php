@@ -125,7 +125,10 @@ class RelationshipManager
             $right = $this->getFieldDetails($relationship[1]);
 
             $builtRelationships[] = $this->getRelationship($left, $right)->oneToOne();
-            $builtRelationships[] = $this->getRelationship($right, $left)->oneToOne()->isAutomaticInverse();
+            $builtRelationships[] = $this->getRelationship($right, $left)
+                ->oneToOne()
+                ->isAutomaticInverse()
+                ->withOriginRelationship($builtRelationships[0]);
         }
 
         return new RelationshipProxy($builtRelationships);
@@ -150,7 +153,10 @@ class RelationshipManager
             $right = $this->getFieldDetails($relationship[1]);
 
             $builtRelationships[] = $this->getRelationship($left, $right)->manyToOne();
-            $builtRelationships[] = $this->getRelationship($right, $left)->oneToMany()->isAutomaticInverse();
+            $builtRelationships[] = $this->getRelationship($right, $left)
+                ->oneToMany()
+                ->isAutomaticInverse()
+                ->withOriginRelationship($builtRelationships[0]);
         }
 
         return new RelationshipProxy($builtRelationships);
@@ -175,7 +181,10 @@ class RelationshipManager
             $right = $this->getFieldDetails($relationship[1]);
 
             $builtRelationships[] = $this->getRelationship($left, $right)->oneToOne();
-            $builtRelationships[] = $this->getRelationship($right, $left)->manyToOne()->isAutomaticInverse();
+            $builtRelationships[] = $this->getRelationship($right, $left)
+                ->manyToOne()
+                ->isAutomaticInverse()
+                ->withOriginRelationship($builtRelationships[0]);
         }
 
         return new RelationshipProxy($builtRelationships);
@@ -254,7 +263,10 @@ class RelationshipManager
             $right = $this->getFieldDetails($relationship[1]);
 
             $builtRelationships[] = $this->getRelationship($left, $right)->manyToMany();
-            $builtRelationships[] = $this->getRelationship($right, $left)->manyToMany()->isAutomaticInverse();
+            $builtRelationships[] = $this->getRelationship($right, $left)
+                ->manyToMany()
+                ->isAutomaticInverse()
+                ->withOriginRelationship($builtRelationships[0]);
         }
 
         return new RelationshipProxy($builtRelationships);

@@ -87,11 +87,13 @@ class RelationshipProcessor
 
     protected $observed = [];
 
-    protected $processingManyToMany = false;
+    protected $processingRelationships = false;
 
-    public function isProcessingManyToMany()
+    protected $dependencies = [];
+
+    public function isProcessingRelationships()
     {
-        return $this->processingManyToMany;
+        return $this->processingRelationships;
     }
 
     public function setIsDeleting($isDeleting = true)
@@ -307,9 +309,11 @@ class RelationshipProcessor
 
     public function processRelationship($relationship, $results)
     {
+        $this->processingRelationships = true;
         UpdatingRelationshipsEvent::dispatch($relationship, $results);
 
         if (! $results->hasChanges()) {
+            $this->processingRelationships = false;
             UpdatedRelationshipsEvent::dispatch($relationship, $results);
 
             return;
@@ -326,6 +330,7 @@ class RelationshipProcessor
         } elseif ($relationship->type == EntryRelationship::TYPE_MANY_TO_ONE) {
             $this->processManyToOne($results, $relationship);
         }
+        $this->processingRelationships = false;
 
         UpdatedRelationshipsEvent::dispatch($relationship, $results);
     }
@@ -352,6 +357,25 @@ class RelationshipProcessor
         }
 
         return true;
+    }
+
+    protected function getDependency(EntryRelationship $relationship, $id)
+    {
+        $data = null;
+
+        if ($relationship->rightType == 'entry') {
+            $data = $this->effectedEntries[$id];
+        } elseif ($relationship->rightType == 'user') {
+            $data = $this->effectedUsers[$id];
+        } elseif ($relationship->rightType == 'term') {
+            $data = $this->effectedTerms[$id];
+        }
+
+        if ($data === null || ! method_exists($data, 'get')) {
+            return null;
+        }
+
+        return $data->get($relationship->rightField);
     }
 
     protected function getEffectedEntity(EntryRelationship $relationship, $id)

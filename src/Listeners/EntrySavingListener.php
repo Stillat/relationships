@@ -38,7 +38,7 @@ class EntrySavingListener extends BaseListener
             return;
         }
 
-        if (EventStack::count() > 1 || $this->manager->processor()->isProcessingManyToMany()) {
+        if (EventStack::count() > 1 || $this->manager->processor()->isProcessingRelationships()) {
             return;
         }
 

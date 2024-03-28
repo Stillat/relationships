@@ -157,6 +157,15 @@ class RelationshipTestCase extends BaseTestCase
             [
                 'title' => 'Book Two',
             ],
+            [
+                'title' => 'Book Three',
+            ],
+            [
+                'title' => 'Book Four',
+            ],
+            [
+                'title' => 'Book Five',
+            ],
         ]);
 
         $this->createEntries('conferences', [
