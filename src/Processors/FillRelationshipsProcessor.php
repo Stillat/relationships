@@ -83,7 +83,13 @@ class FillRelationshipsProcessor
             $mockResults = new ComparisonResult();
             $mockResults->added = $related;
 
-            $this->manager->processor()->withDependent(false)->setEntryId($item->id())
+            $fillId = $item->id();
+
+            if ($item instanceof Term) {
+                $fillId = $item->slug();
+            }
+
+            $this->manager->processor()->withDependent(false)->setEntryId($fillId)
                 ->processRelationship($relationship, $mockResults);
         }
     }
