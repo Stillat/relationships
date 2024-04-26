@@ -3,6 +3,7 @@
 namespace Stillat\Relationships\Processors;
 
 use Statamic\Contracts\Entries\EntryRepository;
+use Statamic\Contracts\Taxonomies\Term;
 use Statamic\Facades\Taxonomy;
 use Stillat\Relationships\Comparisons\ComparisonResult;
 use Stillat\Relationships\EntryRelationship;
@@ -55,6 +56,10 @@ class FillRelationshipsProcessor
         $this->fillRelationships($this->manager->getRelationshipsForCollection($collection));
     }
 
+    /**
+     * @param EntryRelationship[] $relationships
+     * @return void
+     */
     protected function fillRelationships($relationships)
     {
         foreach ($relationships as $relationship) {
@@ -78,7 +83,7 @@ class FillRelationshipsProcessor
             $mockResults = new ComparisonResult();
             $mockResults->added = $related;
 
-            $this->manager->processor()->setEntryId($item->id())
+            $this->manager->processor()->withDependent(false)->setEntryId($item->id())
                 ->processRelationship($relationship, $mockResults);
         }
     }

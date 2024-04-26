@@ -31,6 +31,8 @@ class RelationshipProcessor
         ProcessesOneToMany,
         ProcessesOneToOne;
 
+    protected $withDependent = true;
+
     /**
      * @var EntryRepository
      */
@@ -116,6 +118,12 @@ class RelationshipProcessor
     {
         $this->isNewEntry = true;
         $this->pristineEntry = $entryData;
+
+        return $this;
+    }
+
+    public function withDependent($withDependent = true) {
+        $this->withDependent = $withDependent;
 
         return $this;
     }
