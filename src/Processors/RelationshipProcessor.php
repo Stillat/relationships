@@ -261,7 +261,7 @@ class RelationshipProcessor
 
             $this->effectedTerms = array_merge(
                 $this->effectedTerms,
-                $terms->keyBy('slug')->all()
+                $terms->keyBy(fn($term) => $term->slug())->all()
             );
         }
     }
