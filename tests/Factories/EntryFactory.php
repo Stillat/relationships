@@ -2,9 +2,11 @@
 
 namespace Tests\Factories;
 
+use Illuminate\Support\Str;
 use Statamic\Contracts\Entries\Collection as StatamicCollection;
 use Statamic\Facades\Collection;
 use Statamic\Facades\Entry;
+use Statamic\Statamic;
 
 class EntryFactory
 {
@@ -102,6 +104,17 @@ class EntryFactory
         return tap($this->make())->save();
     }
 
+    private function getLocale()
+    {
+        $version = Statamic::version();
+
+        if (Str::startsWith($version, '5')) {
+            return 'default';
+        }
+
+        return 'en';
+    }
+
     protected function createCollection()
     {
         if ($this->collection instanceof StatamicCollection) {
@@ -110,18 +123,19 @@ class EntryFactory
 
         return Collection::findByHandle($this->collection)
             ?? Collection::make($this->collection)
-                ->sites(['default'])
+                ->sites([$this->getLocale()])
                 ->save();
     }
 
     private function reset()
     {
+
         $this->id = null;
         $this->slug = null;
         $this->data = [];
         $this->published = true;
         $this->order = null;
-        $this->locale = 'default';
+        $this->locale = $this->getLocale();
         $this->origin = null;
         $this->collection = null;
     }
