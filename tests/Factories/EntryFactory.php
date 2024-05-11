@@ -2,9 +2,11 @@
 
 namespace Tests\Factories;
 
+use Illuminate\Support\Str;
 use Statamic\Contracts\Entries\Collection as StatamicCollection;
 use Statamic\Facades\Collection;
 use Statamic\Facades\Entry;
+use Statamic\Statamic;
 
 class EntryFactory
 {
@@ -110,18 +112,19 @@ class EntryFactory
 
         return Collection::findByHandle($this->collection)
             ?? Collection::make($this->collection)
-                ->sites(['en'])
+                ->sites(['default'])
                 ->save();
     }
 
     private function reset()
     {
+
         $this->id = null;
         $this->slug = null;
         $this->data = [];
         $this->published = true;
         $this->order = null;
-        $this->locale = 'en';
+        $this->locale = 'default';
         $this->origin = null;
         $this->collection = null;
     }

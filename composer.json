@@ -17,11 +17,11 @@
     ],
     "require": {
         "php": "^8.0",
-        "statamic/cms": "^4.16"
+        "statamic/cms": "^4.16 || ^5"
     },
     "require-dev": {
         "mockery/mockery": "^1.2.3",
-        "orchestra/testbench": "^7.0 || ^8.0"
+        "orchestra/testbench": "^7.0 || ^8.0 || ^9"
     },
     "autoload": {
         "psr-4": {

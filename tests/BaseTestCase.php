@@ -74,7 +74,7 @@ abstract class BaseTestCase extends \Orchestra\Testbench\TestCase
         $app['config']->set('statamic.sites', [
             'default' => 'en',
             'sites' => [
-                'en' => ['name' => 'English', 'locale' => 'en_US', 'url' => 'http://localhost/'],
+                'default' => ['name' => 'English', 'locale' => 'en_US', 'url' => 'http://localhost/'],
             ],
         ]);
         $app['config']->set('auth.providers.users.driver', 'statamic');
