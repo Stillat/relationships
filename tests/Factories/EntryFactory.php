@@ -110,7 +110,7 @@ class EntryFactory
 
         return Collection::findByHandle($this->collection)
             ?? Collection::make($this->collection)
-                ->sites(['en'])
+                ->sites(['default'])
                 ->save();
     }
 
@@ -121,7 +121,7 @@ class EntryFactory
         $this->data = [];
         $this->published = true;
         $this->order = null;
-        $this->locale = 'en';
+        $this->locale = 'default';
         $this->origin = null;
         $this->collection = null;
     }
