@@ -16,7 +16,7 @@ trait GetsFieldValues
         }
 
         if ($entry instanceof Model) {
-            return $entry->getOriginal($fieldName) ?? $default;
+            return $entry[$fieldName] ?? $default;
         }
 
         return $this->getFieldValue($fieldName, $entry, $default);
