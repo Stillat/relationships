@@ -246,24 +246,15 @@ class RelationshipProcessor
             /** @var EntryCollection $entries */
             $entries = $this->entries->query()->whereIn('id', $entryIds)->get();
 
-            $this->effectedEntries = array_merge(
-                $this->effectedEntries,
-                $entries->keyBy('id')->all()
-            );
+            $this->effectedEntries += $entries->keyBy('id')->all();
         } elseif ($relationship->rightType == 'user') {
             $users = $this->getUsersByIds($entryIds);
 
-            $this->effectedUsers = array_merge(
-                $this->effectedUsers,
-                $users->keyBy('id')->all()
-            );
+            $this->effectedUsers += $users->keyBy('id')->all();
         } elseif ($relationship->rightType == 'term') {
             $terms = $this->getTermsByIds($relationship, $entryIds);
 
-            $this->effectedTerms = array_merge(
-                $this->effectedTerms,
-                $terms->keyBy(fn ($term) => $term->slug())->all()
-            );
+            $this->effectedTerms += $terms->keyBy(fn ($term) => $term->slug())->all();
         }
     }
 
