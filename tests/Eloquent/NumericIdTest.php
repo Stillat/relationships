@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Tests\Eloquent;
 
 use Facades\Tests\Factories\EntryFactory;
 use Statamic\Facades\Entry;
@@ -9,7 +9,7 @@ use Stillat\Relationships\Support\Facades\Relate;
 /**
  * @see https://github.com/Stillat/relationships/issues/43
  */
-class NumericIdTest extends RelationshipTestCase
+class NumericIdTest extends EloquentRelationshipTestCase
 {
     protected function createCollectionEntries()
     {
