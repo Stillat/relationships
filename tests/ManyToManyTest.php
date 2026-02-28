@@ -109,4 +109,45 @@ class ManyToManyTest extends RelationshipTestCase
         $this->assertSame([], $this->getTerm('topics-one')->get('posts', []));
         $this->assertSame([], $this->getTerm('topics-two')->get('posts', []));
     }
+
+    public function test_many_to_many_idempotent()
+    {
+        Relate::clear()
+            ->manyToMany('conferences.sponsors', 'sponsors.sponsoring');
+
+        Entry::find('sponsors-1')->set('sponsoring', [
+            'conferences-1',
+            'conferences-2',
+        ])->save();
+
+        $this->assertSame(['sponsors-1'], Entry::find('conferences-1')->get('sponsors'));
+        $this->assertSame(['sponsors-1'], Entry::find('conferences-2')->get('sponsors'));
+
+        // Save the exact same values again — should not produce duplicates.
+        Entry::find('sponsors-1')->set('sponsoring', [
+            'conferences-1',
+            'conferences-2',
+        ])->save();
+
+        $this->assertSame(['sponsors-1'], Entry::find('conferences-1')->get('sponsors'));
+        $this->assertSame(['sponsors-1'], Entry::find('conferences-2')->get('sponsors'));
+    }
+
+    public function test_no_change_save_does_not_modify_related()
+    {
+        Relate::clear()
+            ->manyToMany('conferences.sponsors', 'sponsors.sponsoring');
+
+        Entry::find('sponsors-1')->set('sponsoring', [
+            'conferences-1',
+        ])->save();
+
+        $this->assertSame(['sponsors-1'], Entry::find('conferences-1')->get('sponsors'));
+
+        // Save an unrelated field — relationship data should remain untouched.
+        Entry::find('conferences-1')->set('title', 'Updated Title')->save();
+
+        $this->assertSame(['sponsors-1'], Entry::find('conferences-1')->get('sponsors'));
+        $this->assertSame(['conferences-1'], Entry::find('sponsors-1')->get('sponsoring'));
+    }
 }

@@ -4,7 +4,6 @@ namespace Tests\Eloquent;
 
 use Statamic\Facades\Entry;
 use Statamic\Facades\User;
-use Stillat\Relationships\Listeners\TermDeletedListener;
 use Stillat\Relationships\Support\Facades\Relate;
 
 class OneToOneDeleteTest extends EloquentRelationshipTestCase
@@ -46,7 +45,6 @@ class OneToOneDeleteTest extends EloquentRelationshipTestCase
 
         $this->assertSame('articles-1', $this->getTerm('topics-one')->get('single_post', null));
 
-        TermDeletedListener::$break = true;
         $this->getTerm('topics-one')->delete();
 
         $this->assertNull(Entry::find('articles-1')->get('post_topic', null));

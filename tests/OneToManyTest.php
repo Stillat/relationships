@@ -167,4 +167,32 @@ class OneToManyTest extends RelationshipTestCase
 
         $this->assertSame('authors-2', Entry::find('books-5')->get('author'));
     }
+
+    public function test_one_to_many_idempotent()
+    {
+        Relate::clear()
+            ->oneToMany('books.author', 'authors.books');
+
+        Entry::find('books-1')->set('author', 'authors-1')->save();
+        Entry::find('books-2')->set('author', 'authors-1')->save();
+
+        $this->assertSame(['books-1', 'books-2'], Entry::find('authors-1')->get('books', []));
+
+        // Save the exact same value again — should not produce duplicates.
+        Entry::find('books-1')->set('author', 'authors-1')->save();
+
+        $this->assertSame(['books-1', 'books-2'], Entry::find('authors-1')->get('books', []));
+        $this->assertSame('authors-1', Entry::find('books-1')->get('author'));
+    }
+
+    public function test_one_to_many_self_reference()
+    {
+        Relate::clear()
+            ->oneToMany('books.author', 'authors.books');
+
+        // An entry referencing itself should not crash or loop infinitely.
+        Entry::find('authors-1')->set('books', ['authors-1'])->save();
+
+        $this->assertTrue(true, 'Self-referential save completed without infinite loop.');
+    }
 }
