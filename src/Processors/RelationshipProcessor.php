@@ -488,7 +488,8 @@ class RelationshipProcessor
         if (($key = array_search($this->entryId, $rightReference)) !== false) {
             unset($rightReference[$key]);
 
-            $entry->set($relationship->rightField, array_values($rightReference));
+            $cleaned = array_values($rightReference);
+            $entry->set($relationship->rightField, empty($cleaned) ? null : $cleaned);
 
             $this->updateEntry($entry, $relationship);
         } else {

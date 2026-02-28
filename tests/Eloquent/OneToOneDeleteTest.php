@@ -20,8 +20,7 @@ class OneToOneDeleteTest extends EloquentRelationshipTestCase
 
         Entry::find('positions-1')->delete();
 
-        // Eloquent driver preserves [] in JSON; Stache normalizes to null via YAML.
-        $this->assertEmpty(Entry::find('employees-1')->get('position', null));
+        $this->assertNull(Entry::find('employees-1')->get('position', null));
     }
 
     public function test_one_to_one_user_delete()
@@ -35,7 +34,7 @@ class OneToOneDeleteTest extends EloquentRelationshipTestCase
 
         User::find('user-1')->delete();
 
-        $this->assertEmpty(Entry::find('books-1')->get('book_author', null));
+        $this->assertNull(Entry::find('books-1')->get('book_author', null));
     }
 
     public function test_one_to_one_term_delete()
@@ -50,6 +49,6 @@ class OneToOneDeleteTest extends EloquentRelationshipTestCase
         TermDeletedListener::$break = true;
         $this->getTerm('topics-one')->delete();
 
-        $this->assertEmpty(Entry::find('articles-1')->get('post_topic', null));
+        $this->assertNull(Entry::find('articles-1')->get('post_topic', null));
     }
 }
