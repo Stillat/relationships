@@ -36,7 +36,7 @@ class RelationshipTestCase extends BaseTestCase
     {
         $fields = YAML::parse(file_get_contents(__DIR__.'/__fixtures__/blueprints/'.$name.'.yaml'))['sections']['main']['fields'];
 
-        $blueprint = new Blueprint();
+        $blueprint = new Blueprint;
         $blueprint->setContents([
             'fields' => $fields,
         ]);

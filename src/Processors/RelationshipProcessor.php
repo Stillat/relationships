@@ -122,7 +122,8 @@ class RelationshipProcessor
         return $this;
     }
 
-    public function withDependent($withDependent = true) {
+    public function withDependent($withDependent = true)
+    {
         $this->withDependent = $withDependent;
 
         return $this;
@@ -211,7 +212,7 @@ class RelationshipProcessor
         }
 
         if ($this->isDelete) {
-            $deletedResults = new ComparisonResult();
+            $deletedResults = new ComparisonResult;
 
             if (! is_array($pristine)) {
                 $pristine = [$pristine];
@@ -261,7 +262,7 @@ class RelationshipProcessor
 
             $this->effectedTerms = array_merge(
                 $this->effectedTerms,
-                $terms->keyBy(fn($term) => $term->slug())->all()
+                $terms->keyBy(fn ($term) => $term->slug())->all()
             );
         }
     }

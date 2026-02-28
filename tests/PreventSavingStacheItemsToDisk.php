@@ -2,9 +2,9 @@
 
 namespace Tests;
 
+use Illuminate\Support\Str;
 use Statamic\Facades\Path;
 use Statamic\Facades\Stache;
-use Illuminate\Support\Str;
 
 trait PreventSavingStacheItemsToDisk
 {

@@ -21,7 +21,8 @@
     },
     "require-dev": {
         "mockery/mockery": "^1.2.3",
-        "orchestra/testbench": "^7.0 || ^8.0 || ^9"
+        "orchestra/testbench": "^7.0 || ^8.0 || ^9",
+        "laravel/pint": "^1.27"
     },
     "autoload": {
         "psr-4": {

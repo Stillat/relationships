@@ -40,7 +40,7 @@ class RelationshipManager
      */
     public function collection($handle)
     {
-        $relationship = new EntryRelationship();
+        $relationship = new EntryRelationship;
         $relationship->collection($handle);
 
         if (! array_key_exists('entries', $this->relationships)) {
@@ -58,7 +58,7 @@ class RelationshipManager
 
     public function user($fieldName)
     {
-        $relationship = new EntryRelationship();
+        $relationship = new EntryRelationship;
         $relationship->leftType = 'user';
         $relationship->leftField = $fieldName;
         $relationship->leftCollection = '[user]';
@@ -74,7 +74,7 @@ class RelationshipManager
 
     public function term($termName)
     {
-        $relationship = new EntryRelationship();
+        $relationship = new EntryRelationship;
         $relationship->leftType = 'term';
         $relationship->leftField = $termName;
         $relationship->leftCollection = '[term]';

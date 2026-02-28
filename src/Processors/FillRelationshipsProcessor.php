@@ -57,7 +57,7 @@ class FillRelationshipsProcessor
     }
 
     /**
-     * @param EntryRelationship[] $relationships
+     * @param  EntryRelationship[]  $relationships
      * @return void
      */
     protected function fillRelationships($relationships)
@@ -80,7 +80,7 @@ class FillRelationshipsProcessor
                 $related = [$related];
             }
 
-            $mockResults = new ComparisonResult();
+            $mockResults = new ComparisonResult;
             $mockResults->added = $related;
 
             $fillId = $item->id();

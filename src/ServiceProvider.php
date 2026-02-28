@@ -67,7 +67,7 @@ class ServiceProvider extends AddonServiceProvider
     public function register()
     {
         $this->app->singleton(EventStack::class, function ($app) {
-            return new EventStack();
+            return new EventStack;
         });
 
         $this->app->singleton(RelationshipManager::class, function ($app) {
