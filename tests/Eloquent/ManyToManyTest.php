@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests;
+namespace Tests\Eloquent;
 
 use Statamic\Facades\Entry;
 use Statamic\Facades\User;
 use Stillat\Relationships\Support\Facades\Relate;
 
-class ManyToManyTest extends RelationshipTestCase
+class ManyToManyTest extends EloquentRelationshipTestCase
 {
     public function test_many_to_many_relationship()
     {

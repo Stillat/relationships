@@ -2,11 +2,9 @@
 
 namespace Tests\Factories;
 
-use Illuminate\Support\Str;
 use Statamic\Contracts\Entries\Collection as StatamicCollection;
 use Statamic\Facades\Collection;
 use Statamic\Facades\Entry;
-use Statamic\Statamic;
 
 class EntryFactory
 {

@@ -24,7 +24,11 @@ trait ProcessesOneToMany
                 $dependent = Data::find($this->getDependency($relationship, $addedId));
 
                 if ($this->withDependent && $dependent !== null && $inverse = $relationship->getInverse()) {
-                    $leftReference = $dependent->get($relationship->leftField);
+                    $leftReference = $dependent->get($relationship->leftField, []);
+
+                    if (! is_array($leftReference)) {
+                        $leftReference = [$leftReference];
+                    }
 
                     if (($key = array_search($addedId, $leftReference)) !== false) {
                         unset($leftReference[$key]);

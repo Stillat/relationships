@@ -11,8 +11,6 @@ class TermDeletedListener
     /** @var RelationshipManager */
     protected $manager;
 
-    public static $break = false;
-
     public function __construct(RelationshipManager $manager)
     {
         $this->manager = $manager;

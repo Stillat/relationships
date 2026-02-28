@@ -1,17 +1,18 @@
 <?php
 
-namespace Tests;
+namespace Tests\Eloquent;
 
 use Statamic\Facades\Entry;
 use Statamic\Facades\User;
 use Stillat\Relationships\Support\Facades\Relate;
 
-class OneToOneDeleteTest extends RelationshipTestCase
+class OneToOneDisabledDeleteTest extends EloquentRelationshipTestCase
 {
-    public function test_one_to_one_delete()
+    public function test_one_to_one_delete_disabled()
     {
         Relate::clear()
-            ->oneToOne('employees.position', 'positions.filled_by');
+            ->oneToOne('employees.position', 'positions.filled_by')
+            ->allowDelete(false);
 
         Entry::find('employees-1')->set('position', 'positions-1')->save();
 
@@ -19,13 +20,14 @@ class OneToOneDeleteTest extends RelationshipTestCase
 
         Entry::find('positions-1')->delete();
 
-        $this->assertNull(Entry::find('employees-1')->get('position', null));
+        $this->assertSame('positions-1', Entry::find('employees-1')->get('position', null));
     }
 
-    public function test_one_to_one_user_delete()
+    public function test_one_to_one_user_disabled_delete()
     {
         Relate::clear()
-            ->oneToOne('books.book_author', 'user:book');
+            ->oneToOne('books.book_author', 'user:book')
+            ->allowDelete(false);
 
         Entry::find('books-1')->set('book_author', 'user-1')->save();
 
@@ -33,13 +35,14 @@ class OneToOneDeleteTest extends RelationshipTestCase
 
         User::find('user-1')->delete();
 
-        $this->assertNull(Entry::find('books-1')->get('book_author', null));
+        $this->assertSame('user-1', Entry::find('books-1')->get('book_author', null));
     }
 
-    public function test_one_to_one_term_delete()
+    public function test_one_to_one_term_delete_disabled()
     {
         Relate::clear()
-            ->oneToOne('term:topics.single_post', 'entry:articles.post_topic');
+            ->oneToOne('term:topics.single_post', 'entry:articles.post_topic')
+            ->allowDelete(false);
 
         Entry::find('articles-1')->set('post_topic', 'topics-one')->save();
 
@@ -47,6 +50,6 @@ class OneToOneDeleteTest extends RelationshipTestCase
 
         $this->getTerm('topics-one')->delete();
 
-        $this->assertNull(Entry::find('articles-1')->get('post_topic', null));
+        $this->assertSame('topics-one', Entry::find('articles-1')->get('post_topic', null));
     }
 }

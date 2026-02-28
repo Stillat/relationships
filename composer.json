@@ -21,7 +21,9 @@
     },
     "require-dev": {
         "mockery/mockery": "^1.2.3",
-        "orchestra/testbench": "^7.0 || ^8.0 || ^9"
+        "orchestra/testbench": "^7.0 || ^8.0 || ^9",
+        "laravel/pint": "^1.27",
+        "statamic/eloquent-driver": "^4.36"
     },
     "autoload": {
         "psr-4": {
@@ -30,7 +32,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests"
+            "Tests\\": "tests",
+            "App\\Models\\": "tests/Support/Models"
         }
     },
     "extra": {

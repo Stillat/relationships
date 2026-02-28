@@ -122,7 +122,8 @@ class RelationshipProcessor
         return $this;
     }
 
-    public function withDependent($withDependent = true) {
+    public function withDependent($withDependent = true)
+    {
         $this->withDependent = $withDependent;
 
         return $this;
@@ -211,7 +212,7 @@ class RelationshipProcessor
         }
 
         if ($this->isDelete) {
-            $deletedResults = new ComparisonResult();
+            $deletedResults = new ComparisonResult;
 
             if (! is_array($pristine)) {
                 $pristine = [$pristine];
@@ -245,24 +246,15 @@ class RelationshipProcessor
             /** @var EntryCollection $entries */
             $entries = $this->entries->query()->whereIn('id', $entryIds)->get();
 
-            $this->effectedEntries = array_merge(
-                $this->effectedEntries,
-                $entries->keyBy('id')->all()
-            );
+            $this->effectedEntries += $entries->keyBy('id')->all();
         } elseif ($relationship->rightType == 'user') {
             $users = $this->getUsersByIds($entryIds);
 
-            $this->effectedUsers = array_merge(
-                $this->effectedUsers,
-                $users->keyBy('id')->all()
-            );
+            $this->effectedUsers += $users->keyBy('id')->all();
         } elseif ($relationship->rightType == 'term') {
             $terms = $this->getTermsByIds($relationship, $entryIds);
 
-            $this->effectedTerms = array_merge(
-                $this->effectedTerms,
-                $terms->keyBy(fn($term) => $term->slug())->all()
-            );
+            $this->effectedTerms += $terms->keyBy(fn ($term) => $term->slug())->all();
         }
     }
 
@@ -496,7 +488,8 @@ class RelationshipProcessor
         if (($key = array_search($this->entryId, $rightReference)) !== false) {
             unset($rightReference[$key]);
 
-            $entry->set($relationship->rightField, array_values($rightReference));
+            $cleaned = array_values($rightReference);
+            $entry->set($relationship->rightField, empty($cleaned) ? null : $cleaned);
 
             $this->updateEntry($entry, $relationship);
         } else {

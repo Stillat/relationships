@@ -1,21 +1,21 @@
 <?php
 
-namespace Tests;
+namespace Tests\Eloquent;
 
-use Facades\Statamic\Fields\BlueprintRepository;
 use Facades\Tests\Factories\EntryFactory;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Statamic\Facades\Collection;
 use Statamic\Facades\Term;
 use Statamic\Facades\User;
 use Statamic\Facades\YAML;
 use Statamic\Fields\Blueprint;
-use Statamic\Taxonomies\LocalizedTerm;
-use Statamic\Taxonomies\Taxonomy;
+use Tests\BaseTestCase;
+use Tests\PreventSavingStacheItemsToDisk;
 
-class RelationshipTestCase extends BaseTestCase
+class EloquentRelationshipTestCase extends BaseTestCase
 {
-    use PreventSavingStacheItemsToDisk;
+    use PreventSavingStacheItemsToDisk, RefreshDatabase;
 
     protected $blueprints = [];
 
@@ -32,9 +32,32 @@ class RelationshipTestCase extends BaseTestCase
         $this->createUsers();
     }
 
+    protected function getPackageProviders($app)
+    {
+        return array_merge(parent::getPackageProviders($app), [
+            \Statamic\Eloquent\ServiceProvider::class,
+        ]);
+    }
+
+    protected function resolveApplicationConfiguration($app)
+    {
+        parent::resolveApplicationConfiguration($app);
+
+        $app['config']->set('statamic.eloquent-driver.entries.driver', 'eloquent');
+        $app['config']->set('statamic.eloquent-driver.entries.model', \Statamic\Eloquent\Entries\UuidEntryModel::class);
+        $app['config']->set('statamic.eloquent-driver.entries.entry', \Statamic\Eloquent\Entries\Entry::class);
+    }
+
+    protected function defineDatabaseMigrations()
+    {
+        $this->loadMigrationsFrom(
+            __DIR__.'/../../vendor/statamic/eloquent-driver/database/migrations/entries/2024_03_07_100000_create_entries_table_with_string_ids.php'
+        );
+    }
+
     protected function buildBlueprint($name, $path)
     {
-        $fields = YAML::parse(file_get_contents(__DIR__.'/__fixtures__/blueprints/'.$name.'.yaml'))['sections']['main']['fields'];
+        $fields = YAML::parse(file_get_contents(__DIR__.'/../__fixtures__/blueprints/'.$name.'.yaml'))['sections']['main']['fields'];
 
         $blueprint = new Blueprint;
         $blueprint->setContents([
@@ -44,8 +67,8 @@ class RelationshipTestCase extends BaseTestCase
 
         $this->blueprints[$name] = $blueprint;
 
-        BlueprintRepository::shouldReceive('find')->zeroOrMoreTimes()->with($path)->andReturn($blueprint);
-        BlueprintRepository::shouldReceive('in')->zeroOrMoreTimes()->with($path)->andReturn(collect([
+        \Facades\Statamic\Fields\BlueprintRepository::shouldReceive('find')->zeroOrMoreTimes()->with($path)->andReturn($blueprint);
+        \Facades\Statamic\Fields\BlueprintRepository::shouldReceive('in')->zeroOrMoreTimes()->with($path)->andReturn(collect([
             $name => $blueprint,
         ]));
     }
@@ -107,12 +130,6 @@ class RelationshipTestCase extends BaseTestCase
         }
     }
 
-    /**
-     * Locate a taxonomy term by its slug.
-     *
-     * @param  string  $slug
-     * @return LocalizedTerm|null
-     */
     protected function getTerm($slug)
     {
         return Term::query()->where('slug', $slug)->first();
@@ -142,81 +159,43 @@ class RelationshipTestCase extends BaseTestCase
     protected function createCollectionEntries()
     {
         $this->createEntries('authors', [
-            [
-                'title' => 'Author One',
-            ],
-            [
-                'title' => 'Author Two',
-            ],
+            ['title' => 'Author One'],
+            ['title' => 'Author Two'],
         ]);
 
         $this->createEntries('books', [
-            [
-                'title' => 'Book One',
-            ],
-            [
-                'title' => 'Book Two',
-            ],
-            [
-                'title' => 'Book Three',
-            ],
-            [
-                'title' => 'Book Four',
-            ],
-            [
-                'title' => 'Book Five',
-            ],
+            ['title' => 'Book One'],
+            ['title' => 'Book Two'],
+            ['title' => 'Book Three'],
+            ['title' => 'Book Four'],
+            ['title' => 'Book Five'],
         ]);
 
         $this->createEntries('conferences', [
-            [
-                'title' => 'Conference One',
-            ],
-            [
-                'title' => 'Conference Two',
-            ],
+            ['title' => 'Conference One'],
+            ['title' => 'Conference Two'],
         ]);
 
         $this->createEntries('employees', [
-            [
-                'title' => 'Employee One',
-            ],
-            [
-                'title' => 'Employee Two',
-            ],
+            ['title' => 'Employee One'],
+            ['title' => 'Employee Two'],
         ]);
 
         $this->createEntries('positions', [
-            [
-                'title' => 'Position One',
-            ],
-            [
-                'title' => 'Position Two',
-            ],
+            ['title' => 'Position One'],
+            ['title' => 'Position Two'],
         ]);
 
         $this->createEntries('sponsors', [
-            [
-                'title' => 'Sponsor One',
-            ],
-            [
-                'title' => 'Sponsor Two',
-            ],
+            ['title' => 'Sponsor One'],
+            ['title' => 'Sponsor Two'],
         ]);
 
         $this->createEntries('articles', [
-            [
-                'title' => 'Article One',
-            ],
-            [
-                'title' => 'Article Two',
-            ],
-            [
-                'title' => 'Article Three',
-            ],
-            [
-                'title' => 'Article Four',
-            ],
+            ['title' => 'Article One'],
+            ['title' => 'Article Two'],
+            ['title' => 'Article Three'],
+            ['title' => 'Article Four'],
         ]);
     }
 }

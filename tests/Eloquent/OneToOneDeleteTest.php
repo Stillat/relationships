@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests;
+namespace Tests\Eloquent;
 
 use Statamic\Facades\Entry;
 use Statamic\Facades\User;
 use Stillat\Relationships\Support\Facades\Relate;
 
-class OneToOneDeleteTest extends RelationshipTestCase
+class OneToOneDeleteTest extends EloquentRelationshipTestCase
 {
     public function test_one_to_one_delete()
     {
